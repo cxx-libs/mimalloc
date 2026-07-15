@@ -5,9 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_STATS_H
-#define MIMALLOC_STATS_H
-
 #include <mimalloc.h>
 #include <stdint.h>
 
@@ -104,5 +101,3 @@ mi_decl_export char* mi_stats_get_json( size_t buf_size, char* buf ) noexcept;  
 #ifdef __cplusplus
 }
 #endif
-
-#endif // MIMALLOC_STATS_H

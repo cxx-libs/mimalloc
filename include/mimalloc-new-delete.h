@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_NEW_DELETE_H
-#define MIMALLOC_NEW_DELETE_H
 
 // ----------------------------------------------------------------------------
 // This header provides convenient overrides for the new and
@@ -62,5 +60,3 @@ terms of the MIT license. A copy of the license can be found in the file
   void* operator new[](std::size_t n, std::align_val_t al, const std::nothrow_t&) noexcept { return mi_new_aligned_nothrow(n, static_cast<size_t>(al)); }
   #endif
 #endif
-
-#endif // MIMALLOC_NEW_DELETE_H

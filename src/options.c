@@ -197,7 +197,7 @@ void _mi_options_init(void) {
 #define mi_stringifyx(str)  #str                // and stringify
 #define mi_stringify(str)   mi_stringifyx(str)  // expand
 
-void mi_options_print(void) noexcept
+void mi_options_print() noexcept
 {
   // show version
   const int vermajor = MI_MALLOC_VERSION/10000;

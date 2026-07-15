@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_OVERRIDE_H
-#define MIMALLOC_OVERRIDE_H
 
 /* ----------------------------------------------------------------------------
 This header can be used to statically redirect malloc/free and new/delete
@@ -64,5 +62,3 @@ not accidentally mix pointers from different allocators).
 #define _aligned_offset_malloc(n,a,o)         mi_malloc_aligned_at(n,a,o)
 #define _aligned_offset_realloc(p,n,a,o)      mi_realloc_aligned_at(p,n,a,o)
 #define _aligned_offset_recalloc(p,c,n,a,o)   mi_recalloc_aligned_at(p,c,n,a,o)
-
-#endif // MIMALLOC_OVERRIDE_H

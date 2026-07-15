@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_TYPES_H
-#define MIMALLOC_TYPES_H
 
 // --------------------------------------------------------------------------
 // This file contains the main type definitions for mimalloc:
@@ -663,5 +661,3 @@ void _mi_stat_counter_increase(mi_stat_counter_t* stat, size_t amount);
 #define mi_heap_stat_increase(heap,stat,amount)  mi_stat_increase( (heap)->tld->stats.stat, amount)
 #define mi_heap_stat_decrease(heap,stat,amount)  mi_stat_decrease( (heap)->tld->stats.stat, amount)
 #define mi_heap_stat_adjust_decrease(heap,stat,amount)  mi_stat_adjust_decrease( (heap)->tld->stats.stat, amount)
-
-#endif

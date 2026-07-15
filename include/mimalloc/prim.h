@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_PRIM_H
-#define MIMALLOC_PRIM_H
 #include "internal.h"             // mi_decl_hidden
 
 // --------------------------------------------------------------------------
@@ -421,5 +419,3 @@ static inline mi_heap_t* mi_prim_get_default_heap() {
 }
 
 #endif  // mi_prim_get_default_heap()
-
-#endif  // MIMALLOC_PRIM_H

@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_ATOMIC_H
-#define MIMALLOC_ATOMIC_H
 
 // include windows.h or pthreads.h
 #if defined(_WIN32)
@@ -65,14 +63,14 @@ terms of the MIT license. A copy of the license can be found in the file
 #define mi_atomic_and_acq_rel(p,x)               mi_atomic(fetch_and_explicit)(p,x,mi_memory_order(acq_rel))
 #define mi_atomic_or_acq_rel(p,x)                mi_atomic(fetch_or_explicit)(p,x,mi_memory_order(acq_rel))
 
-#define mi_atomic_increment_relaxed(p)           mi_atomic_add_relaxed(p,(uintptr_t)1)
-#define mi_atomic_decrement_relaxed(p)           mi_atomic_sub_relaxed(p,(uintptr_t)1)
-#define mi_atomic_increment_acq_rel(p)           mi_atomic_add_acq_rel(p,(uintptr_t)1)
-#define mi_atomic_decrement_acq_rel(p)           mi_atomic_sub_acq_rel(p,(uintptr_t)1)
+#define mi_atomic_increment_relaxed(p)           mi_atomic_add_relaxed(p,static_cast<std::uintptr_t>(1))
+#define mi_atomic_decrement_relaxed(p)           mi_atomic_sub_relaxed(p,static_cast<std::uintptr_t>(1))
+#define mi_atomic_increment_acq_rel(p)           mi_atomic_add_acq_rel(p,static_cast<std::uintptr_t>(1))
+#define mi_atomic_decrement_acq_rel(p)           mi_atomic_sub_acq_rel(p,static_cast<std::uintptr_t>(1))
 
 static inline void mi_atomic_yield(void);
-static inline intptr_t mi_atomic_addi(_Atomic(intptr_t)*p, intptr_t add);
-static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub);
+static inline std::intptr_t mi_atomic_addi(_Atomic(std::intptr_t)*p, std::intptr_t add);
+static inline std::intptr_t mi_atomic_subi(_Atomic(std::intptr_t)*p, std::intptr_t sub);
 
 // In C++/C11 atomics we have polymorphic atomics so can use the typed `ptr` variants (where `tp` is the type of atomic value)
 // We use these macros so we can provide a typed wrapper in MSVC in C compilation mode as well
@@ -91,18 +89,18 @@ static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub);
 #define mi_atomic_exchange_ptr_acq_rel(tp,p,x)          mi_atomic_exchange_acq_rel(p,(tp*)x)
 
 // These are used by the statistics
-static inline int64_t mi_atomic_addi64_relaxed(volatile int64_t* p, int64_t add) {
-  return mi_atomic(fetch_add_explicit)((_Atomic(int64_t)*)p, add, mi_memory_order(relaxed));
+static inline std::int64_t mi_atomic_addi64_relaxed(volatile std::int64_t* p, std::int64_t add) {
+  return mi_atomic(fetch_add_explicit)((_Atomic(std::int64_t)*)p, add, mi_memory_order(relaxed));
 }
-static inline void mi_atomic_void_addi64_relaxed(volatile int64_t* p, const volatile int64_t* padd) {
-  const int64_t add = mi_atomic_load_relaxed((_Atomic(int64_t)*)padd);
+static inline void mi_atomic_void_addi64_relaxed(volatile std::int64_t* p, const volatile std::int64_t* padd) {
+  const std::int64_t add = mi_atomic_load_relaxed((_Atomic(std::int64_t)*)padd);
   if (add != 0) {
-    mi_atomic(fetch_add_explicit)((_Atomic(int64_t)*)p, add, mi_memory_order(relaxed));
+    mi_atomic(fetch_add_explicit)((_Atomic(std::int64_t)*)p, add, mi_memory_order(relaxed));
   }
 }
-static inline void mi_atomic_maxi64_relaxed(volatile int64_t* p, int64_t x) {
-  int64_t current = mi_atomic_load_relaxed((_Atomic(int64_t)*)p);
-  while (current < x && !mi_atomic_cas_weak_release((_Atomic(int64_t)*)p, &current, x)) { /* nothing */ };
+static inline void mi_atomic_maxi64_relaxed(volatile std::int64_t* p, std::int64_t x) {
+  std::int64_t current = mi_atomic_load_relaxed((_Atomic(std::int64_t)*)p);
+  while (current < x && !mi_atomic_cas_weak_release((_Atomic(std::int64_t)*)p, &current, x)) { /* nothing */ };
 }
 
 // Used by timers
@@ -115,34 +113,34 @@ static inline void mi_atomic_maxi64_relaxed(volatile int64_t* p, int64_t x) {
 #define mi_atomic_addi64_acq_rel(p,i)           mi_atomic_add_acq_rel(p,i)
 
 // Atomically add a signed value; returns the previous value.
-static inline intptr_t mi_atomic_addi(_Atomic(intptr_t)*p, intptr_t add) {
-  return (intptr_t)mi_atomic_add_acq_rel((_Atomic(uintptr_t)*)p, (uintptr_t)add);
+static inline std::intptr_t mi_atomic_addi(_Atomic(std::intptr_t)*p, std::intptr_t add) {
+  return (std::intptr_t)mi_atomic_add_acq_rel((_Atomic(std::uintptr_t)*)p, (std::uintptr_t)add);
 }
 
 // Atomically subtract a signed value; returns the previous value.
-static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub) {
-  return (intptr_t)mi_atomic_addi(p, -sub);
+static inline std::intptr_t mi_atomic_subi(_Atomic(std::intptr_t)*p, std::intptr_t sub) {
+  return (std::intptr_t)mi_atomic_addi(p, -sub);
 }
 
 // ----------------------------------------------------------------------
 // Once and Guard
 // ----------------------------------------------------------------------
 
-typedef _Atomic(uintptr_t) mi_atomic_guard_t;
+typedef _Atomic(std::uintptr_t) mi_atomic_guard_t;
 
 // Allows only one thread to execute at a time (without blocking anyone)
 #define mi_atomic_guard(guard) \
-  uintptr_t _mi_guard_expected = 0; \
+  std::uintptr_t _mi_guard_expected = 0; \
   for(bool _mi_guard_once = true; \
-      _mi_guard_once && mi_atomic_cas_strong_acq_rel(guard,&_mi_guard_expected,(uintptr_t)1); \
-      (mi_atomic_store_release(guard,(uintptr_t)0), _mi_guard_once = false) )
+      _mi_guard_once && mi_atomic_cas_strong_acq_rel(guard,&_mi_guard_expected,(std::uintptr_t)1); \
+      (mi_atomic_store_release(guard,(std::uintptr_t)0), _mi_guard_once = false) )
 
 // ----------------------------------------------------------------------
 // Yield
 // ----------------------------------------------------------------------
 
 #if defined(_WIN32)
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   YieldProcessor();  // see issue #1215 and #1225 why this is preferred over __yield or SwitchToThread
 }
 #elif defined(__SSE2__)
@@ -210,11 +208,6 @@ static inline void mi_atomic_yield() {
 static inline void mi_atomic_yield() {
   std::this_thread::yield();
 }
-#else
-#include <unistd.h>
-static inline void mi_atomic_yield() {
-  sleep(0);
-}
 #endif
 
 #if defined(_WIN32)
@@ -228,8 +221,8 @@ static inline void mi_sleep0() {
 }
 #endif
 
-static inline void mi_atomic_yield_sleep( size_t* ticks, const size_t ticks_until_sleep ) {
-  const size_t n = *ticks;
+static inline void mi_atomic_yield_sleep( std::size_t* ticks, const std::size_t ticks_until_sleep ) {
+  const std::size_t n = *ticks;
   if (n==0 || n > ticks_until_sleep) {
     *ticks = ticks_until_sleep; // reset
   }
@@ -381,9 +374,8 @@ static inline void mi_lock_done(mi_lock_t* lock) {
 
 #endif
 
-
 typedef struct mi_atomic_once_s {
-  _Atomic(uintptr_t) tid;
+  _Atomic(std::uintptr_t) tid;
   mi_lock_t          lock;
 } mi_atomic_once_t;
 
@@ -396,6 +388,3 @@ void _mi_atomic_once_release(mi_atomic_once_t* once);      // defined in `libc.c
 #define mi_atomic_do_once  \
   static mi_atomic_once_t _mi_once = { MI_ATOMIC_VAR_INIT(0), MI_LOCK_INITIALIZER }; \
   for(bool _mi_exec = _mi_atomic_once_enter(&_mi_once); _mi_exec; (_mi_atomic_once_release(&_mi_once),_mi_exec=false))
-
-
-#endif // __MIMALLOC_ATOMIC_H

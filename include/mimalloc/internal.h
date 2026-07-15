@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_INTERNAL_H
-#define MIMALLOC_INTERNAL_H
 
 // --------------------------------------------------------------------------
 // This file contains the internal API's of mimalloc and various utility
@@ -85,16 +83,16 @@ terms of the MIT license. A copy of the license can be found in the file
 
 // "libc.c"
 #include    <stdarg.h>
-int         _mi_vsnprintf(char* buf, size_t bufsize, const char* fmt, va_list args);
-int         _mi_snprintf(char* buf, size_t buflen, const char* fmt, ...);
+int         _mi_vsnprintf(char* buf, std::size_t bufsize, const char* fmt, va_list args);
+int         _mi_snprintf(char* buf, std::size_t buflen, const char* fmt, ...);
 char        _mi_toupper(char c);
-int         _mi_strnicmp(const char* s, const char* t, size_t n);
-void        _mi_strlcpy(char* dest, const char* src, size_t dest_size);
-void        _mi_strlcat(char* dest, const char* src, size_t dest_size);
-size_t      _mi_strlen(const char* s);
-size_t      _mi_strnlen(const char* s, size_t max_len);
+int         _mi_strnicmp(const char* s, const char* t, std::size_t n);
+void        _mi_strlcpy(char* dest, const char* src, std::size_t dest_size);
+void        _mi_strlcat(char* dest, const char* src, std::size_t dest_size);
+std::size_t      _mi_strlen(const char* s);
+std::size_t      _mi_strnlen(const char* s, std::size_t max_len);
 bool        _mi_streq(const char* s, const char* t);
-int         _mi_getenv(const char* name, char* result, size_t result_size);
+int         _mi_getenv(const char* name, char* result, std::size_t result_size);
 
 // "options.c"
 void        _mi_fputs(mi_output_fun* out, void* arg, const char* prefix, const char* message);
@@ -112,10 +110,10 @@ void        _mi_random_init(mi_random_ctx_t* ctx);
 void        _mi_random_init_weak(mi_random_ctx_t* ctx);
 void        _mi_random_reinit_if_weak(mi_random_ctx_t * ctx);
 void        _mi_random_split(mi_random_ctx_t* ctx, mi_random_ctx_t* new_ctx);
-uintptr_t   _mi_random_next(mi_random_ctx_t* ctx);
-uintptr_t   _mi_heap_random_next(mi_heap_t* heap);
-uintptr_t   _mi_os_random_weak(uintptr_t extra_seed);
-static inline uintptr_t _mi_random_shuffle(uintptr_t x);
+std::uintptr_t   _mi_random_next(mi_random_ctx_t* ctx);
+std::uintptr_t   _mi_heap_random_next(mi_heap_t* heap);
+std::uintptr_t   _mi_os_random_weak(std::uintptr_t extra_seed);
+static inline std::uintptr_t _mi_random_shuffle(std::uintptr_t x);
 
 // init.c
 extern mi_decl_hidden alignas(64) mi_stats_t       _mi_stats_main;
@@ -138,42 +136,42 @@ void        _mi_heap_guarded_init(mi_heap_t* heap);
 
 // os.c
 void        _mi_os_init();                                            // called from process init
-void*       _mi_os_alloc(size_t size, mi_memid_t* memid);
-void*       _mi_os_zalloc(size_t size, mi_memid_t* memid);
-void        _mi_os_free(void* p, size_t size, mi_memid_t memid);
-void        _mi_os_free_ex(void* p, size_t size, bool still_committed, mi_memid_t memid);
+void*       _mi_os_alloc(std::size_t size, mi_memid_t* memid);
+void*       _mi_os_zalloc(std::size_t size, mi_memid_t* memid);
+void        _mi_os_free(void* p, std::size_t size, mi_memid_t memid);
+void        _mi_os_free_ex(void* p, std::size_t size, bool still_committed, mi_memid_t memid);
 
-size_t      _mi_os_page_size();
-size_t      _mi_os_good_alloc_size(size_t size);
+std::size_t      _mi_os_page_size();
+std::size_t      _mi_os_good_alloc_size(std::size_t size);
 bool        _mi_os_has_overcommit();
 bool        _mi_os_has_virtual_reserve();
 
-bool        _mi_os_reset(void* addr, size_t size);
-bool        _mi_os_decommit(void* addr, size_t size);
-bool        _mi_os_unprotect(void* addr, size_t size);
-bool        _mi_os_purge(void* p, size_t size);
-bool        _mi_os_purge_ex(void* p, size_t size, bool allow_reset, size_t stat_size);
-void        _mi_os_reuse(void* p, size_t size);
-[[nodiscard]] bool _mi_os_commit(void* p, size_t size, bool* is_zero);
-[[nodiscard]] bool _mi_os_commit_ex(void* addr, size_t size, bool* is_zero, size_t stat_size);
-bool        _mi_os_protect(void* addr, size_t size);
+bool        _mi_os_reset(void* addr, std::size_t size);
+bool        _mi_os_decommit(void* addr, std::size_t size);
+bool        _mi_os_unprotect(void* addr, std::size_t size);
+bool        _mi_os_purge(void* p, std::size_t size);
+bool        _mi_os_purge_ex(void* p, std::size_t size, bool allow_reset, std::size_t stat_size);
+void        _mi_os_reuse(void* p, std::size_t size);
+[[nodiscard]] bool _mi_os_commit(void* p, std::size_t size, bool* is_zero);
+[[nodiscard]] bool _mi_os_commit_ex(void* addr, std::size_t size, bool* is_zero, std::size_t stat_size);
+bool        _mi_os_protect(void* addr, std::size_t size);
 
-void*       _mi_os_alloc_aligned(size_t size, size_t alignment, bool commit, bool allow_large, mi_memid_t* memid);
-void*       _mi_os_alloc_aligned_at_offset(size_t size, size_t alignment, size_t align_offset, bool commit, bool allow_large, mi_memid_t* memid);
+void*       _mi_os_alloc_aligned(std::size_t size, std::size_t alignment, bool commit, bool allow_large, mi_memid_t* memid);
+void*       _mi_os_alloc_aligned_at_offset(std::size_t size, std::size_t alignment, std::size_t align_offset, bool commit, bool allow_large, mi_memid_t* memid);
 
-void*       _mi_os_get_aligned_hint(size_t try_alignment, size_t size);
-bool        _mi_os_canuse_large_page(size_t size, size_t alignment);
-size_t      _mi_os_large_page_size();
-void*       _mi_os_alloc_huge_os_pages(size_t pages, int numa_node, mi_msecs_t max_secs, size_t* pages_reserved, size_t* psize, mi_memid_t* memid);
+void*       _mi_os_get_aligned_hint(std::size_t try_alignment, std::size_t size);
+bool        _mi_os_canuse_large_page(std::size_t size, std::size_t alignment);
+std::size_t      _mi_os_large_page_size();
+void*       _mi_os_alloc_huge_os_pages(std::size_t pages, int numa_node, mi_msecs_t max_secs, std::size_t* pages_reserved, std::size_t* psize, mi_memid_t* memid);
 
 int         _mi_os_numa_node_count();
 int         _mi_os_numa_node();
 
 // arena.c
 mi_arena_id_t _mi_arena_id_none();
-void        _mi_arena_free(void* p, size_t size, size_t still_committed_size, mi_memid_t memid);
-void*       _mi_arena_alloc(size_t size, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
-void*       _mi_arena_alloc_aligned(size_t size, size_t alignment, size_t align_offset, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
+void        _mi_arena_free(void* p, std::size_t size, std::size_t still_committed_size, mi_memid_t memid);
+void*       _mi_arena_alloc(std::size_t size, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
+void*       _mi_arena_alloc_aligned(std::size_t size, std::size_t alignment, std::size_t align_offset, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
 bool        _mi_arena_memid_is_suitable(mi_memid_t memid, mi_arena_id_t request_arena_id);
 bool        _mi_arena_contains(const void* p);
 void        _mi_arenas_collect(bool force_purge);
@@ -182,14 +180,14 @@ void        _mi_arena_unsafe_destroy_all();
 bool        _mi_arena_segment_clear_abandoned(mi_segment_t* segment);
 void        _mi_arena_segment_mark_abandoned(mi_segment_t* segment);
 
-void*       _mi_arena_meta_zalloc(size_t size, mi_memid_t* memid);
-void        _mi_arena_meta_free(void* p, mi_memid_t memid, size_t size);
+void*       _mi_arena_meta_zalloc(std::size_t size, mi_memid_t* memid);
+void        _mi_arena_meta_free(void* p, mi_memid_t memid, std::size_t size);
 
 typedef struct mi_arena_field_cursor_s { // abstract struct
-  size_t         os_list_count;           // max entries to visit in the OS abandoned list
-  size_t         start;                   // start arena idx (may need to be wrapped)
-  size_t         end;                     // end arena idx (exclusive, may need to be wrapped)
-  size_t         bitmap_idx;              // current bit idx for an arena
+  std::size_t         os_list_count;           // max entries to visit in the OS abandoned list
+  std::size_t         start;                   // start arena idx (may need to be wrapped)
+  std::size_t         end;                     // end arena idx (exclusive, may need to be wrapped)
+  std::size_t         bitmap_idx;              // current bit idx for an arena
   mi_subproc_t*  subproc;                 // only visit blocks in this sub-process
   bool           visit_all;               // ensure all abandoned blocks are seen (blocking)
   bool           hold_visit_lock;         // if the subproc->abandoned_os_visit_lock is held
@@ -204,7 +202,7 @@ void        _mi_segment_map_freed_at(const mi_segment_t* segment);
 void        _mi_segment_map_unsafe_destroy();
 
 // "segment.c"
-mi_page_t* _mi_segment_page_alloc(mi_heap_t* heap, size_t block_size, size_t page_alignment, mi_segments_tld_t* tld);
+mi_page_t* _mi_segment_page_alloc(mi_heap_t* heap, std::size_t block_size, std::size_t page_alignment, mi_segments_tld_t* tld);
 void       _mi_segment_page_free(mi_page_t* page, bool force, mi_segments_tld_t* tld);
 void       _mi_segment_page_abandon(mi_page_t* page, mi_segments_tld_t* tld);
 bool       _mi_segment_try_reclaim_abandoned( mi_heap_t* heap, bool try_all, mi_segments_tld_t* tld);
@@ -216,14 +214,14 @@ void        _mi_segment_huge_page_free(mi_segment_t* segment, mi_page_t* page, m
 void        _mi_segment_huge_page_reset(mi_segment_t* segment, mi_page_t* page, mi_block_t* block);
 #endif
 
-uint8_t*   _mi_segment_page_start(const mi_segment_t* segment, const mi_page_t* page, size_t* page_size); // page start for any page
+std::uint8_t*   _mi_segment_page_start(const mi_segment_t* segment, const mi_page_t* page, std::size_t* page_size); // page start for any page
 void       _mi_abandoned_reclaim_all(mi_heap_t* heap, mi_segments_tld_t* tld);
 void       _mi_abandoned_collect(mi_heap_t* heap, bool force, mi_segments_tld_t* tld);
 bool       _mi_segment_attempt_reclaim(mi_heap_t* heap, mi_segment_t* segment);
 bool       _mi_segment_visit_blocks(mi_segment_t* segment, int heap_tag, bool visit_blocks, mi_block_visit_fun* visitor, void* arg);
 
 // "page.c"
-void*       _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable)  noexcept mi_attr_malloc;
+void*       _mi_malloc_generic(mi_heap_t* heap, std::size_t size, bool zero, std::size_t huge_alignment, std::size_t* usable)  noexcept mi_attr_malloc;
 
 void        _mi_page_retire(mi_page_t* page) noexcept;                  // free the page if there are no other pages with many free blocks
 void        _mi_page_unfull(mi_page_t* page);
@@ -1131,6 +1129,4 @@ static inline void _mi_memzero_aligned(void* dst, size_t n) {
   mi_assert_internal((uintptr_t)dst % MI_INTPTR_SIZE == 0);
   _mi_memzero(dst, n);
 }
-#endif
-
 #endif

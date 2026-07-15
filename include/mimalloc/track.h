@@ -5,8 +5,6 @@ terms of the MIT license. A copy of the license can be found in the file
 "LICENSE" at the root of this distribution.
 -----------------------------------------------------------------------------*/
 #pragma once
-#ifndef MIMALLOC_TRACK_H
-#define MIMALLOC_TRACK_H
 
 /* ------------------------------------------------------------------------------------------------------
 Track memory ranges with macros for tools like Valgrind address sanitizer, or other memory checkers.
@@ -144,6 +142,4 @@ defined, undefined, or not accessible at all:
     mi_assert_internal(mi_usable_size(p)>=(reqsize)); \
     mi_track_malloc_size(p,reqsize,mi_usable_size(p),zero); \
   }
-#endif
-
 #endif
