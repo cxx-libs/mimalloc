@@ -368,7 +368,7 @@ static inline size_t _mi_usable_size(const void* p, const mi_page_t* page) mi_at
   }
 }
 
-mi_decl_nodiscard size_t mi_usable_size(const void* p) mi_attr_noexcept {
+[[nodiscard]] size_t mi_usable_size(const void* p) mi_attr_noexcept {
   const mi_page_t* const page = mi_validate_ptr_page(p,"mi_usable_size");
   return _mi_usable_size(p,page);
 }

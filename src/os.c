@@ -367,7 +367,7 @@ void* _mi_os_alloc_aligned(size_t size, size_t alignment, bool commit, bool allo
 }
 
 
-mi_decl_nodiscard static void* mi_os_ensure_zero(void* p, size_t size, mi_memid_t* memid) {
+[[nodiscard]] static void* mi_os_ensure_zero(void* p, size_t size, mi_memid_t* memid) {
   if (p==NULL || size==0) return p;
   // ensure committed
   if (!memid->initially_committed) {

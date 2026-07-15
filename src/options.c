@@ -250,7 +250,7 @@ long _mi_option_get_fast(mi_option_t option) {
 }
 
 
-mi_decl_nodiscard long mi_option_get(mi_option_t option) {
+[[nodiscard]] long mi_option_get(mi_option_t option) {
   mi_assert(option >= 0 && option < _mi_option_last);
   if (option < 0 || option >= _mi_option_last) return 0;
   mi_option_desc_t* desc = &options[option];
@@ -261,12 +261,12 @@ mi_decl_nodiscard long mi_option_get(mi_option_t option) {
   return desc->value;
 }
 
-mi_decl_nodiscard long mi_option_get_clamp(mi_option_t option, long min, long max) {
+[[nodiscard]] long mi_option_get_clamp(mi_option_t option, long min, long max) {
   long x = mi_option_get(option);
   return (x < min ? min : (x > max ? max : x));
 }
 
-mi_decl_nodiscard size_t mi_option_get_size(mi_option_t option) {
+[[nodiscard]] size_t mi_option_get_size(mi_option_t option) {
   const long x = mi_option_get(option);
   size_t size = (x < 0 ? 0 : (size_t)x);
   if (mi_option_has_size_in_kib(option)) {
@@ -302,7 +302,7 @@ void mi_option_set_default(mi_option_t option, long value) {
   }
 }
 
-mi_decl_nodiscard bool mi_option_is_enabled(mi_option_t option) {
+[[nodiscard]] bool mi_option_is_enabled(mi_option_t option) {
   return (mi_option_get(option) != 0);
 }
 

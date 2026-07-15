@@ -577,7 +577,7 @@ bool mi_decl_noinline _mi_preloading(void) {
 }
 
 // Returns true if mimalloc was redirected
-mi_decl_nodiscard bool mi_is_redirected(void) mi_attr_noexcept {
+[[nodiscard]] bool mi_is_redirected(void) mi_attr_noexcept {
   return _mi_is_redirected();
 }
 

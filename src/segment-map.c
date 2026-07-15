@@ -133,7 +133,7 @@ static bool mi_is_valid_pointer(const void* p) {
   return (_mi_arena_contains(p) || _mi_segment_of(p) != NULL);
 }
 
-mi_decl_nodiscard mi_decl_export bool mi_is_in_heap_region(const void* p) mi_attr_noexcept {
+[[nodiscard]] mi_decl_export bool mi_is_in_heap_region(const void* p) mi_attr_noexcept {
   return mi_is_valid_pointer(p);
 }
 
