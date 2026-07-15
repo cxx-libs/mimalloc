@@ -7,7 +7,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #ifndef TESTHELPER_H_
 #define TESTHELPER_H_
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <errno.h>
 

@@ -370,7 +370,6 @@ static void test_large_pages(void) {
 
 #if 0
 #include <stdint.h>
-#include <stdbool.h>
 
 #define MI_INTPTR_SIZE 8
 #define MI_LARGE_WSIZE_MAX (4*1024*1024 / MI_INTPTR_SIZE)

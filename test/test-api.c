@@ -24,7 +24,6 @@ we therefore test the API over various inputs. Please add more tests :-)
 */
 
 #include <assert.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <errno.h>
 
