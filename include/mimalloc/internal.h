@@ -34,14 +34,12 @@ terms of the MIT license. A copy of the license can be found in the file
 #pragma warning(disable:26812)  // unscoped enum warning
 #define mi_decl_noinline        __declspec(noinline)
 #define mi_decl_align(a)        __declspec(align(a))
-#define mi_decl_noreturn        __declspec(noreturn)
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
 #elif (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__clang__) // includes clang and icc
 #define mi_decl_noinline        __attribute__((noinline))
 #define mi_decl_align(a)        __attribute__((aligned(a)))
-#define mi_decl_noreturn        __attribute__((noreturn))
 #define mi_decl_weak            __attribute__((weak))
 #define mi_decl_hidden          __attribute__((visibility("hidden")))
 #if (__GNUC__ >= 4) || defined(__clang__)
@@ -52,14 +50,12 @@ terms of the MIT license. A copy of the license can be found in the file
 #elif __cplusplus >= 201103L    // c++11
 #define mi_decl_noinline
 #define mi_decl_align(a)        alignas(a)
-#define mi_decl_noreturn        [[noreturn]]
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
 #else
 #define mi_decl_noinline
 #define mi_decl_align(a)
-#define mi_decl_noreturn
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
@@ -327,7 +323,7 @@ bool        _mi_page_is_valid(mi_page_t* page);
 
 #if (MI_DEBUG)
 // use our own assertion to print without memory allocation
-mi_decl_noreturn mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned int line, const char* func) noexcept;
+[[noreturn]] mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned int line, const char* func) noexcept;
 #define mi_assert(expr)     ((expr) ? (void)0 : _mi_assert_fail(#expr,__FILE__,__LINE__,__func__))
 #else
 #define mi_assert(x)
