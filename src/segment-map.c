@@ -137,7 +137,7 @@ static bool mi_is_valid_pointer(const void* p) {
   return mi_is_valid_pointer(p);
 }
 
-void _mi_segment_map_unsafe_destroy(void) {
+void _mi_segment_map_unsafe_destroy() {
   for (size_t i = 0; i < MI_SEGMENT_MAP_MAX_PARTS; i++) {
     mi_segmap_part_t* part = mi_atomic_exchange_ptr_relaxed(mi_segmap_part_t, &mi_segment_map[i], NULL);
     if (part != NULL) {

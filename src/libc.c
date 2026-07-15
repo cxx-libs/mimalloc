@@ -88,7 +88,6 @@ int _mi_getenv(const char* name, char* result, size_t result_size) {
 }
 #endif
 
-
 // --------------------------------------------------------
 // Define our own primitives for doing an action once
 // --------------------------------------------------------
@@ -123,7 +122,6 @@ void _mi_atomic_once_release(mi_atomic_once_t* once) {
     mi_lock_release(&once->lock);
   }
 }
-
 
 // --------------------------------------------------------
 // Define our own limited `_mi_vsnprintf` and `_mi_snprintf`
@@ -175,7 +173,6 @@ static void mi_out_alignright(char fill, char* start, size_t len, size_t extra, 
   }
 }
 
-
 static void mi_out_num(uintmax_t x, size_t base, char prefix, char** out, char* end)
 {
   if (x == 0 || base == 0 || base > 16) {
@@ -202,7 +199,6 @@ static void mi_out_num(uintmax_t x, size_t base, char prefix, char** out, char* 
     }
   }
 }
-
 
 #define MI_NEXTC()  c = *in; if (c==0) break; in++;
 
@@ -322,7 +318,6 @@ int _mi_snprintf(char* buf, size_t buflen, const char* fmt, ...) {
   va_end(args);
   return written;
 }
-
 
 #if MI_SIZE_SIZE == 4
 #define mi_mask_even_bits32      (0x55555555)

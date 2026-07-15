@@ -202,7 +202,6 @@ static void intro_reinit_lock(malloc_zone_t* zone) {
   MI_UNUSED(zone);
 }
 
-
 /* ------------------------------------------------------
   At process start, override the default allocator
 ------------------------------------------------------ */
@@ -295,21 +294,20 @@ static inline malloc_zone_t* mi_get_default_zone(void) {
 }
 
 mi_decl_externc int  malloc_jumpstart(uintptr_t cookie);
-mi_decl_externc void _malloc_fork_prepare(void);
-mi_decl_externc void _malloc_fork_parent(void);
-mi_decl_externc void _malloc_fork_child(void);
-
+mi_decl_externc void _malloc_fork_prepare();
+mi_decl_externc void _malloc_fork_parent();
+mi_decl_externc void _malloc_fork_child();
 
 static malloc_zone_t* mi_malloc_create_zone(vm_size_t size, unsigned flags) {
   MI_UNUSED(size); MI_UNUSED(flags);
   return mi_get_default_zone();
 }
 
-static malloc_zone_t* mi_malloc_default_zone (void) {
+static malloc_zone_t* mi_malloc_default_zone () {
   return mi_get_default_zone();
 }
 
-static malloc_zone_t* mi_malloc_default_purgeable_zone(void) {
+static malloc_zone_t* mi_malloc_default_purgeable_zone() {
   return mi_get_default_zone();
 }
 
@@ -338,13 +336,13 @@ static int mi_malloc_jumpstart(uintptr_t cookie) {
   return 1; // or 0 for no error?
 }
 
-static void mi__malloc_fork_prepare(void) {
+static void mi__malloc_fork_prepare() {
   // nothing
 }
-static void mi__malloc_fork_parent(void) {
+static void mi__malloc_fork_parent() {
   // nothing
 }
-static void mi__malloc_fork_child(void) {
+static void mi__malloc_fork_child() {
   // nothing
 }
 
@@ -424,7 +422,6 @@ __attribute__((used)) static const struct mi_interpose_s _mi_zone_interposes[]  
   MI_INTERPOSE_ZONE(zone_valloc)
 };
 
-
 #else
 
 // ------------------------------------------------------
@@ -433,7 +430,7 @@ __attribute__((used)) static const struct mi_interpose_s _mi_zone_interposes[]  
 // it seems less robust than using interpose.
 // ------------------------------------------------------
 
-static inline malloc_zone_t* mi_get_default_zone(void)
+static inline malloc_zone_t* mi_get_default_zone()
 {
   // The first returned zone is the real default
   malloc_zone_t** zones = NULL;
@@ -454,7 +451,7 @@ __attribute__((constructor(101))) // highest priority
 __attribute__((constructor))      // priority level is not supported by gcc
 #endif
 __attribute__((used))
-static void _mi_macos_override_malloc(void) {
+static void _mi_macos_override_malloc() {
   malloc_zone_t* purgeable_zone = NULL;
 
   #if defined(MAC_OS_X_VERSION_10_6) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6)

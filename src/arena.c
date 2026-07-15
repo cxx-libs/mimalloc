@@ -24,7 +24,6 @@ The arena allocation needs to be thread safe and we use an atomic bitmap to allo
 #include "mimalloc/atomic.h"
 #include "bitmap.h"
 
-
 /* -----------------------------------------------------------
   Arena allocation
 ----------------------------------------------------------- */
@@ -52,7 +51,6 @@ typedef struct mi_arena_s {
   mi_bitmap_field_t   blocks_inuse[1];      // in-place bitmap of in-use blocks (of size `field_count`)
   // do not add further fields here as the dirty, committed, purged, and abandoned bitmaps follow the inuse bitmap fields.
 } mi_arena_t;
-
 
 #define MI_ARENA_BLOCK_SIZE   (MI_SEGMENT_SIZE)        // 64MiB  (must be at least MI_SEGMENT_ALIGN)
 #define MI_ARENA_MIN_OBJ_SIZE (MI_ARENA_BLOCK_SIZE/2)  // 32MiB
@@ -145,8 +143,6 @@ bool mi_arena_memid_indices(mi_memid_t memid, size_t* arena_index, mi_bitmap_ind
   return memid.mem.arena.is_exclusive;
 }
 
-
-
 /* -----------------------------------------------------------
   Special static area for mimalloc internal structures
   to avoid OS calls (for example, for the arena metadata (~= 256b))
@@ -211,7 +207,6 @@ void* mi_arena_block_start(mi_arena_t* arena, mi_bitmap_index_t bindex) {
   return (arena->start + mi_arena_block_size(mi_bitmap_index_bit(bindex)));
 }
 
-
 /* -----------------------------------------------------------
   Thread safe allocation in an arena
 ----------------------------------------------------------- */
@@ -226,7 +221,6 @@ static bool mi_arena_try_claim(mi_arena_t* arena, size_t blocks, mi_bitmap_index
   };
   return false;
 }
-
 
 /* -----------------------------------------------------------
   Arena Allocation
@@ -329,7 +323,6 @@ static void* mi_arena_try_alloc_at_id(mi_arena_id_t arena_id, bool match_numa_no
   mi_assert_internal(p == NULL || _mi_is_aligned(p, alignment));
   return p;
 }
-
 
 // allocate from an arena with fallback to the OS
 static mi_decl_noinline void* mi_arena_try_alloc(int numa_node, size_t size, size_t alignment,
@@ -461,12 +454,11 @@ void* mi_arena_area(mi_arena_id_t arena_id, size_t* size) {
   return arena->start;
 }
 
-
 /* -----------------------------------------------------------
   Arena purge
 ----------------------------------------------------------- */
 
-static long mi_arena_purge_delay(void) {
+static long mi_arena_purge_delay() {
   // <0 = no purging allowed, 0=immediate purging, >0=milli-second delay
   return (mi_option_get(mi_option_purge_delay) * mi_option_get(mi_option_arena_purge_mult));
 }
@@ -665,7 +657,6 @@ static void mi_arenas_try_purge( bool force, bool visit_all )
     }
   }
 }
-
 
 /* -----------------------------------------------------------
   Arena free
@@ -927,7 +918,6 @@ int mi_reserve_os_memory(size_t size, bool commit, bool allow_large) noexcept {
   return mi_reserve_os_memory_ex(size, commit, allow_large, false, NULL);
 }
 
-
 /* -----------------------------------------------------------
   Debugging
 ----------------------------------------------------------- */
@@ -984,11 +974,9 @@ void mi_debug_show_arenas(void) noexcept {
   //if (show_purge)     _mi_message("total purgeable blocks: %zu\n", purge_total);
 }
 
-
-void mi_arenas_print(void) noexcept {
+void mi_arenas_print() noexcept {
   mi_debug_show_arenas();
 }
-
 
 /* -----------------------------------------------------------
   Reserve a huge page arena.

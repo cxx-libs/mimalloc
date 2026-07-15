@@ -18,7 +18,6 @@ static bool   mi_check_is_double_free(const mi_page_t* page, const mi_block_t* b
 static size_t mi_page_usable_size_of(const mi_page_t* page, const mi_block_t* block, bool was_guarded);
 static void   mi_stat_free(const mi_page_t* page, const mi_block_t* block);
 
-
 // ------------------------------------------------------
 // Free
 // ------------------------------------------------------
@@ -200,7 +199,6 @@ void mi_free_small(void* p) noexcept {
   mi_free(p);
 }
 
-
 // return true if successful
 bool _mi_free_delayed_block(mi_block_t* block) {
   // get segment and page
@@ -333,7 +331,6 @@ static void mi_decl_noinline mi_free_block_mt(mi_page_t* page, mi_segment_t* seg
   mi_free_block_delayed_mt(page,block);
 }
 
-
 // ------------------------------------------------------
 // Usable size
 // ------------------------------------------------------
@@ -373,7 +370,6 @@ static inline size_t _mi_usable_size(const void* p, const mi_page_t* page) noexc
   return _mi_usable_size(p,page);
 }
 
-
 // ------------------------------------------------------
 // Free variants
 // ------------------------------------------------------
@@ -399,7 +395,6 @@ void mi_free_aligned(void* p, size_t alignment) noexcept {
   mi_assert(((uintptr_t)p % alignment) == 0);
   mi_free(p);
 }
-
 
 // ------------------------------------------------------
 // Check for double free in secure and debug mode
@@ -450,7 +445,6 @@ static inline bool mi_check_is_double_free(const mi_page_t* page, const mi_block
   return false;
 }
 #endif
-
 
 // ---------------------------------------------------------------------------
 // Check for heap block overflow by setting up padding at the end of the block

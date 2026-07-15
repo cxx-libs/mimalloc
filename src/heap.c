@@ -73,9 +73,6 @@ static bool mi_heap_is_valid(mi_heap_t* heap) {
 }
 #endif
 
-
-
-
 /* -----------------------------------------------------------
   "Collect" pages by migrating `local_free` and `thread_free`
   lists and freeing empty pages. This is done when a thread
@@ -88,7 +85,6 @@ typedef enum mi_collect_e {
   MI_FORCE,
   MI_ABANDON
 } mi_collect_t;
-
 
 static bool mi_heap_page_collect(mi_heap_t* heap, mi_page_queue_t* pq, mi_page_t* page, void* arg_collect, void* arg2 ) {
   MI_UNUSED(arg2);
@@ -201,7 +197,7 @@ void mi_collect(bool force) noexcept {
   Heap new
 ----------------------------------------------------------- */
 
-mi_heap_t* mi_heap_get_default(void) {
+mi_heap_t* mi_heap_get_default() {
   mi_thread_init();
   return mi_prim_get_default_heap();
 }
@@ -211,7 +207,7 @@ static bool mi_heap_is_default(const mi_heap_t* heap) {
 }
 
 
-mi_heap_t* mi_heap_get_backing(void) {
+mi_heap_t* mi_heap_get_backing() {
   mi_heap_t* heap = mi_heap_get_default();
   mi_assert_internal(heap!=NULL);
   mi_heap_t* bheap = heap->tld->heap_backing;
@@ -259,7 +255,7 @@ void _mi_heap_init(mi_heap_t* heap, mi_tld_t* tld, mi_arena_id_t arena_id, bool 
   return mi_heap_new_ex(0 /* default heap tag */, false /* don't allow `mi_heap_destroy` */, arena_id);
 }
 
-[[nodiscard]] mi_heap_t* mi_heap_new(void) {
+[[nodiscard]] mi_heap_t* mi_heap_new() {
   // don't reclaim abandoned memory or otherwise destroy is unsafe
   return mi_heap_new_ex(0 /* default heap tag */, true /* no reclaim */, _mi_arena_id_none());
 }
@@ -509,9 +505,6 @@ mi_heap_t* mi_heap_set_default(mi_heap_t* heap) {
   return old;
 }
 
-
-
-
 /* -----------------------------------------------------------
   Analysis
 ----------------------------------------------------------- */
@@ -531,7 +524,6 @@ bool mi_heap_contains_block(mi_heap_t* heap, const void* p) {
   if (heap==NULL || !mi_heap_is_initialized(heap)) return false;
   return (heap == mi_heap_of_block(p));
 }
-
 
 static bool mi_heap_page_check_owned(mi_heap_t* heap, mi_page_queue_t* pq, mi_page_t* page, void* p, void* vfound) {
   MI_UNUSED(heap);
@@ -573,7 +565,6 @@ void _mi_heap_area_init(mi_heap_area_t* area, mi_page_t* page) {
   area->full_block_size = bsize;
   area->heap_tag = page->heap_tag;
 }
-
 
 static void mi_get_fast_divisor(size_t divisor, uint64_t* magic, size_t* shift) {
   mi_assert_internal(divisor > 0 && divisor <= UINT32_MAX);
@@ -692,8 +683,6 @@ bool _mi_heap_area_visit_blocks(const mi_heap_area_t* area, mi_page_t* page, mi_
   return true;
 }
 
-
-
 // Separate struct to keep `mi_page_t` out of the public interface
 typedef struct mi_heap_area_ex_s {
   mi_heap_area_t area;
@@ -743,8 +732,6 @@ bool mi_heap_visit_blocks(const mi_heap_t* heap, bool visit_blocks, mi_block_vis
   mi_visit_blocks_args_t args = { visit_blocks, visitor, arg };
   return mi_heap_visit_areas(heap, &mi_heap_area_visitor, &args);
 }
-
-
 
 static const mi_page_t* mi_safe_ptr_page(void* p) {
   const mi_segment_t* const segment = _mi_ptr_segment(p);

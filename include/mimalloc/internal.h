@@ -16,7 +16,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #include "types.h"
 #include "track.h"
 
-
 // --------------------------------------------------------------------------
 // Compiler defines
 // --------------------------------------------------------------------------
@@ -80,7 +79,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #define __wasi__
 #endif
 
-
 // --------------------------------------------------------------------------
 // Internal functions
 // --------------------------------------------------------------------------
@@ -105,7 +103,7 @@ void        _mi_message(const char* fmt, ...);
 void        _mi_warning_message(const char* fmt, ...);
 void        _mi_verbose_message(const char* fmt, ...);
 void        _mi_trace_message(const char* fmt, ...);
-void        _mi_options_init(void);
+void        _mi_options_init();
 long        _mi_option_get_fast(mi_option_t option);
 void        _mi_error_message(int err, const char* fmt, ...);
 
@@ -122,33 +120,33 @@ static inline uintptr_t _mi_random_shuffle(uintptr_t x);
 // init.c
 extern mi_decl_hidden alignas(64) mi_stats_t       _mi_stats_main;
 extern mi_decl_hidden alignas(64) const mi_page_t  _mi_page_empty;
-void        _mi_auto_process_init(void);
-void mi_cdecl _mi_auto_process_done(void) noexcept;
-bool        _mi_is_redirected(void);
+void        _mi_auto_process_init();
+void mi_cdecl _mi_auto_process_done() noexcept;
+bool        _mi_is_redirected();
 bool        _mi_allocator_init(const char** message);
-void        _mi_allocator_done(void);
-bool        _mi_is_main_thread(void);
-size_t      _mi_current_thread_count(void);
-bool        _mi_preloading(void);           // true while the C runtime is not initialized yet
+void        _mi_allocator_done();
+bool        _mi_is_main_thread();
+size_t      _mi_current_thread_count();
+bool        _mi_preloading();           // true while the C runtime is not initialized yet
 void        _mi_thread_done(mi_heap_t* heap);
-void        _mi_thread_data_collect(void);
+void        _mi_thread_data_collect();
 void        _mi_tld_init(mi_tld_t* tld, mi_heap_t* bheap);
-mi_threadid_t _mi_thread_id(void) noexcept;
-mi_heap_t*    _mi_heap_main_get(void);     // statically allocated main backing heap
+mi_threadid_t _mi_thread_id() noexcept;
+mi_heap_t*    _mi_heap_main_get();     // statically allocated main backing heap
 mi_subproc_t* _mi_subproc_from_id(mi_subproc_id_t subproc_id);
 void        _mi_heap_guarded_init(mi_heap_t* heap);
 
 // os.c
-void        _mi_os_init(void);                                            // called from process init
+void        _mi_os_init();                                            // called from process init
 void*       _mi_os_alloc(size_t size, mi_memid_t* memid);
 void*       _mi_os_zalloc(size_t size, mi_memid_t* memid);
 void        _mi_os_free(void* p, size_t size, mi_memid_t memid);
 void        _mi_os_free_ex(void* p, size_t size, bool still_committed, mi_memid_t memid);
 
-size_t      _mi_os_page_size(void);
+size_t      _mi_os_page_size();
 size_t      _mi_os_good_alloc_size(size_t size);
-bool        _mi_os_has_overcommit(void);
-bool        _mi_os_has_virtual_reserve(void);
+bool        _mi_os_has_overcommit();
+bool        _mi_os_has_virtual_reserve();
 
 bool        _mi_os_reset(void* addr, size_t size);
 bool        _mi_os_decommit(void* addr, size_t size);
@@ -165,21 +163,21 @@ void*       _mi_os_alloc_aligned_at_offset(size_t size, size_t alignment, size_t
 
 void*       _mi_os_get_aligned_hint(size_t try_alignment, size_t size);
 bool        _mi_os_canuse_large_page(size_t size, size_t alignment);
-size_t      _mi_os_large_page_size(void);
+size_t      _mi_os_large_page_size();
 void*       _mi_os_alloc_huge_os_pages(size_t pages, int numa_node, mi_msecs_t max_secs, size_t* pages_reserved, size_t* psize, mi_memid_t* memid);
 
-int         _mi_os_numa_node_count(void);
-int         _mi_os_numa_node(void);
+int         _mi_os_numa_node_count();
+int         _mi_os_numa_node();
 
 // arena.c
-mi_arena_id_t _mi_arena_id_none(void);
+mi_arena_id_t _mi_arena_id_none();
 void        _mi_arena_free(void* p, size_t size, size_t still_committed_size, mi_memid_t memid);
 void*       _mi_arena_alloc(size_t size, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
 void*       _mi_arena_alloc_aligned(size_t size, size_t alignment, size_t align_offset, bool commit, bool allow_large, mi_arena_id_t req_arena_id, mi_memid_t* memid);
 bool        _mi_arena_memid_is_suitable(mi_memid_t memid, mi_arena_id_t request_arena_id);
 bool        _mi_arena_contains(const void* p);
 void        _mi_arenas_collect(bool force_purge);
-void        _mi_arena_unsafe_destroy_all(void);
+void        _mi_arena_unsafe_destroy_all();
 
 bool        _mi_arena_segment_clear_abandoned(mi_segment_t* segment);
 void        _mi_arena_segment_mark_abandoned(mi_segment_t* segment);
@@ -203,7 +201,7 @@ void          _mi_arena_field_cursor_done(mi_arena_field_cursor_t* current);
 // "segment-map.c"
 void        _mi_segment_map_allocated_at(const mi_segment_t* segment);
 void        _mi_segment_map_freed_at(const mi_segment_t* segment);
-void        _mi_segment_map_unsafe_destroy(void);
+void        _mi_segment_map_unsafe_destroy();
 
 // "segment.c"
 mi_page_t* _mi_segment_page_alloc(mi_heap_t* heap, size_t block_size, size_t page_alignment, mi_segments_tld_t* tld);
@@ -263,9 +261,9 @@ bool        _mi_heap_area_visit_blocks(const mi_heap_area_t* area, mi_page_t* pa
 // "stats.c"
 void        _mi_stats_done(mi_stats_t* stats);
 void        _mi_stats_merge_thread(mi_tld_t* tld);
-mi_msecs_t  _mi_clock_now(void);
+mi_msecs_t  _mi_clock_now();
 mi_msecs_t  _mi_clock_end(mi_msecs_t start);
-mi_msecs_t  _mi_clock_start(void);
+mi_msecs_t  _mi_clock_start();
 
 // "alloc.c"
 void*       _mi_page_malloc_zero(mi_heap_t* heap, mi_page_t* page, size_t size, bool zero, size_t* usable) noexcept;  // called from `_mi_malloc_generic`
@@ -310,7 +308,6 @@ bool        _mi_page_is_valid(mi_page_t* page);
 #define ENOENT (2)
 #endif
 
-
 // ------------------------------------------------------
 // Assertions
 // ------------------------------------------------------
@@ -334,8 +331,6 @@ bool        _mi_page_is_valid(mi_page_t* page);
 #else
 #define mi_assert_expensive(x)
 #endif
-
-
 
 /* -----------------------------------------------------------
   Inlined definitions
@@ -411,7 +406,6 @@ static inline uintptr_t _mi_divide_up(uintptr_t size, size_t divider) {
   return (divider == 0 ? size : ((size + divider - 1) / divider));
 }
 
-
 // clamp an integer
 static inline size_t _mi_clamp(size_t sz, size_t min, size_t max) {
   if (sz < min) return min;
@@ -426,7 +420,6 @@ static inline bool mi_mem_is_zero(const void* p, size_t size) {
   }
   return true;
 }
-
 
 // Align a byte size to a size in _machine words_,
 // i.e. byte size == `wsize*sizeof(void*)`.
@@ -474,7 +467,6 @@ static inline bool mi_count_size_overflow(size_t count, size_t size, size_t* tot
   }
   else return false;
 }
-
 
 /*----------------------------------------------------------------------------------------
   Heap functions
@@ -669,8 +661,6 @@ static inline mi_page_queue_t* mi_page_queue(const mi_heap_t* heap, size_t size)
   return &((mi_heap_t*)heap)->pages[_mi_bin(size)];
 }
 
-
-
 //-----------------------------------------------------------
 // Page flags
 //-----------------------------------------------------------
@@ -734,7 +724,6 @@ static inline bool mi_heap_malloc_use_guarded(mi_heap_t* heap, size_t size) {
 mi_decl_restrict void* _mi_heap_malloc_guarded(mi_heap_t* heap, size_t size, bool zero) noexcept;
 
 #endif
-
 
 /* -------------------------------------------------------------------
 Encoding/Decoding the free list next pointers
@@ -853,7 +842,6 @@ static inline void mi_block_set_next(const mi_page_t* page, mi_block_t* block, c
   #endif
 }
 
-
 // -------------------------------------------------------------------
 // commit mask
 // -------------------------------------------------------------------
@@ -896,8 +884,6 @@ size_t _mi_commit_mask_next_run(const mi_commit_mask_t* cm, size_t* idx);
     idx += count; \
   }
 
-
-
 /* -----------------------------------------------------------
   memory id's
 ----------------------------------------------------------- */
@@ -909,7 +895,7 @@ static inline mi_memid_t _mi_memid_create(mi_memkind_t memkind) {
   return memid;
 }
 
-static inline mi_memid_t _mi_memid_none(void) {
+static inline mi_memid_t _mi_memid_none() {
   return _mi_memid_create(MI_MEM_NONE);
 }
 
@@ -922,7 +908,6 @@ static inline mi_memid_t _mi_memid_create_os(void* base, size_t size, bool commi
   memid.is_pinned = is_large;
   return memid;
 }
-
 
 // -------------------------------------------------------------------
 // Fast "random" shuffle
@@ -947,8 +932,6 @@ static inline uintptr_t _mi_random_shuffle(uintptr_t x) {
 #endif
   return x;
 }
-
-
 
 // -----------------------------------------------------------------------
 // Count bits: trailing or leading zeros (with MI_INTPTR_BITS on all zero)
@@ -1149,6 +1132,5 @@ static inline void _mi_memzero_aligned(void* dst, size_t n) {
   _mi_memzero(dst, n);
 }
 #endif
-
 
 #endif

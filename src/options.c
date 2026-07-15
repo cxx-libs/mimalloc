@@ -12,17 +12,14 @@ terms of the MIT license. A copy of the license can be found in the file
 #include <stdio.h>      // stdin/stdout
 #include <stdlib.h>     // abort
 
-
-
 static long mi_max_error_count   = 16; // stop outputting errors after this (use < 0 for no limit)
 static long mi_max_warning_count = 16; // stop outputting warnings after this (use < 0 for no limit)
 
 static void mi_add_stderr_output(void);
 
-int mi_version(void) noexcept {
+int mi_version() noexcept {
   return MI_MALLOC_VERSION;
 }
-
 
 // --------------------------------------------------------
 // Options
@@ -97,7 +94,6 @@ typedef struct mi_option_desc_s {
 #define MI_DEFAULT_GUARDED_SAMPLE_RATE 0
 #endif
 #endif
-
 
 #ifndef MI_DEFAULT_ALLOW_THP
 #if defined(__ANDROID__)
@@ -249,7 +245,6 @@ long _mi_option_get_fast(mi_option_t option) {
   return desc->value;
 }
 
-
 [[nodiscard]] long mi_option_get(mi_option_t option) {
   mi_assert(option >= 0 && option < _mi_option_last);
   if (option < 0 || option >= _mi_option_last) return 0;
@@ -374,15 +369,12 @@ static void mi_out_buf_flush(mi_output_fun* out, bool no_more_buf, void* arg) {
   }
 }
 
-
 // Once this module is loaded, switch to this routine
 // which outputs to stderr and the delayed output buffer.
 static void mi_cdecl mi_out_buf_stderr(const char* msg, void* arg) {
   mi_out_stderr(msg,arg);
   mi_out_buf(msg,arg);
 }
-
-
 
 // --------------------------------------------------------
 // Default output handler
@@ -539,7 +531,6 @@ void _mi_warning_message(const char* fmt, ...) {
   va_end(args);
 }
 
-
 #if MI_DEBUG
 [[noreturn]] mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned line, const char* func ) noexcept {
   _mi_fprintf(NULL, NULL, "mimalloc: assertion failed: at \"%s\":%u, %s\n  assertion: \"%s\"\n", fname, line, (func==NULL?"":func), assertion);
@@ -603,7 +594,6 @@ void _mi_error_message(int err, const char* fmt, ...) {
 // TODO: implement ourselves to reduce dependencies on the C runtime
 #include <stdlib.h> // strtol
 #include <string.h> // strstr
-
 
 static void mi_option_init(mi_option_desc_t* desc) {
   // Read option value from the environment

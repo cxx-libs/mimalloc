@@ -31,11 +31,9 @@ terms of the MIT license. A copy of the license can be found in the file
   // ok, default alignment is 1 word
 #endif
 
-
 /* -----------------------------------------------------------
   Queue query
 ----------------------------------------------------------- */
-
 
 static inline bool mi_page_queue_is_huge(const mi_page_queue_t* pq) {
   return (pq->block_size == (MI_MEDIUM_OBJ_SIZE_MAX+sizeof(uintptr_t)));
@@ -90,8 +88,6 @@ static inline size_t mi_bin(size_t size) {
     return bin;
   }
 }
-
-
 
 /* -----------------------------------------------------------
   Queue of pages with free blocks
@@ -244,7 +240,6 @@ static void mi_page_queue_remove(mi_page_queue_t* queue, mi_page_t* page) {
   // mi_atomic_store_ptr_release(mi_atomic_cast(void*, &page->heap), NULL);
   mi_page_set_in_full(page,false);
 }
-
 
 #if MI_DEBUG >= 3
 static bool mi_page_queue_is_consistent(const mi_page_queue_t* queue);

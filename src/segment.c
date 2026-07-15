@@ -16,9 +16,7 @@ terms of the MIT license. A copy of the license can be found in the file
 // mimalloc pages reside in segments. See `mi_segment_valid` for invariants.
 // -------------------------------------------------------------------
 
-
 static void mi_segment_try_purge(mi_segment_t* segment, bool force);
-
 
 // -------------------------------------------------------------------
 // commit mask
@@ -145,7 +143,6 @@ size_t _mi_commit_mask_next_run(const mi_commit_mask_t* cm, size_t* idx) {
   }
 }
 
-
 /* --------------------------------------------------------------------------------
   Segment allocation
   We allocate pages inside bigger "segments" (32 MiB on 64-bit). This is to avoid
@@ -167,11 +164,9 @@ size_t _mi_commit_mask_next_run(const mi_commit_mask_t* cm, size_t* idx) {
   (much like work-stealing).
 -------------------------------------------------------------------------------- */
 
-
 /* -----------------------------------------------------------
    Slices
 ----------------------------------------------------------- */
-
 
 static const mi_slice_t* mi_segment_slices_end(const mi_segment_t* segment) {
   return &segment->slices[segment->slice_entries];
@@ -182,7 +177,6 @@ static uint8_t* mi_slice_start(const mi_slice_t* slice) {
   mi_assert_internal(slice >= segment->slices && slice < mi_segment_slices_end(segment));
   return ((uint8_t*)segment + ((slice - segment->slices)*MI_SEGMENT_SLICE_SIZE));
 }
-
 
 /* -----------------------------------------------------------
    Bins
@@ -213,7 +207,6 @@ static inline size_t mi_slice_index(const mi_slice_t* slice) {
   mi_assert_internal(index >= 0 && index < (ptrdiff_t)segment->slice_entries);
   return index;
 }
-
 
 /* -----------------------------------------------------------
    Slice span queues
@@ -249,7 +242,6 @@ static void mi_span_queue_delete(mi_span_queue_t* sq, mi_slice_t* slice) {
   slice->block_size = 1; // no more free
 }
 
-
 /* -----------------------------------------------------------
  Invariant checking
 ----------------------------------------------------------- */
@@ -257,7 +249,6 @@ static void mi_span_queue_delete(mi_span_queue_t* sq, mi_slice_t* slice) {
 static bool mi_slice_is_used(const mi_slice_t* slice) {
   return (slice->block_size > 0);
 }
-
 
 #if (MI_DEBUG>=3)
 static bool mi_span_queue_contains(mi_span_queue_t* sq, mi_slice_t* slice) {
@@ -397,7 +388,6 @@ static size_t mi_segment_calculate_slices(size_t required, size_t* info_slices) 
   mi_assert_internal(segment_size % MI_SEGMENT_SLICE_SIZE == 0);
   return (segment_size / MI_SEGMENT_SLICE_SIZE);
 }
-
 
 /* ----------------------------------------------------------------------------
 Segment caches
@@ -732,8 +722,6 @@ static mi_slice_t* mi_segment_span_free_coalesce(mi_slice_t* slice, mi_segments_
   return slice;
 }
 
-
-
 /* -----------------------------------------------------------
    Page allocation
 ----------------------------------------------------------- */
@@ -835,7 +823,6 @@ static mi_page_t* mi_segments_page_find_and_allocate(size_t slice_count, mi_aren
   return NULL;
 }
 
-
 /* -----------------------------------------------------------
    Segment allocation
 ----------------------------------------------------------- */
@@ -900,7 +887,6 @@ static mi_segment_t* mi_segment_os_alloc( size_t required, size_t page_alignment
   _mi_segment_map_allocated_at(segment);
   return segment;
 }
-
 
 // Allocate a segment from the OS aligned to `MI_SEGMENT_SIZE` .
 static mi_segment_t* mi_segment_alloc(size_t required, size_t page_alignment, mi_arena_id_t req_arena_id, mi_segments_tld_t* tld, mi_page_t** huge_page)
@@ -981,7 +967,6 @@ static mi_segment_t* mi_segment_alloc(size_t required, size_t page_alignment, mi
   return segment;
 }
 
-
 static void mi_segment_free(mi_segment_t* segment, bool force, mi_segments_tld_t* tld) {
   MI_UNUSED(force);
   mi_assert_internal(segment != NULL);
@@ -1017,7 +1002,6 @@ static void mi_segment_free(mi_segment_t* segment, bool force, mi_segments_tld_t
   // return it to the OS
   mi_segment_os_free(segment, tld);
 }
-
 
 /* -----------------------------------------------------------
    Page Free
@@ -1085,7 +1069,6 @@ void _mi_segment_page_free(mi_page_t* page, bool force, mi_segments_tld_t* tld)
     mi_segment_try_purge(segment, false /* force? */);
   }
 }
-
 
 /* -----------------------------------------------------------
 Abandonment
@@ -1290,7 +1273,6 @@ static mi_segment_t* mi_segment_reclaim(mi_segment_t* segment, mi_heap_t* heap, 
   }
 }
 
-
 // attempt to reclaim a particular segment (called from multi threaded free `alloc.c:mi_free_block_mt`)
 bool _mi_segment_attempt_reclaim(mi_heap_t* heap, mi_segment_t* segment) {
   if (mi_atomic_load_relaxed(&segment->thread_id) != 0) return false;  // it is not abandoned
@@ -1322,7 +1304,6 @@ void _mi_abandoned_reclaim_all(mi_heap_t* heap, mi_segments_tld_t* tld) {
   }
   _mi_arena_field_cursor_done(&current);
 }
-
 
 static bool segment_count_is_within_target(mi_segments_tld_t* tld, size_t* ptarget) {
   const size_t target = (size_t)mi_option_get_clamp(mi_option_target_segments_per_thread, 0, 1024);
@@ -1539,7 +1520,6 @@ static mi_segment_t* mi_segment_reclaim_or_alloc(mi_heap_t* heap, size_t needed_
   return mi_segment_alloc(0, 0, heap->arena_id, tld, NULL);
 }
 
-
 /* -----------------------------------------------------------
    Page allocation
 ----------------------------------------------------------- */
@@ -1569,8 +1549,6 @@ static mi_page_t* mi_segments_page_alloc(mi_heap_t* heap, mi_page_kind_t page_ki
   mi_segment_try_purge(_mi_ptr_segment(page), false);
   return page;
 }
-
-
 
 /* -----------------------------------------------------------
    Huge page allocation
@@ -1682,7 +1660,6 @@ mi_page_t* _mi_segment_page_alloc(mi_heap_t* heap, size_t block_size, size_t pag
   mi_assert_internal(page == NULL || _mi_page_segment(page)->subproc == tld->subproc);
   return page;
 }
-
 
 /* -----------------------------------------------------------
    Visit blocks in a segment (only used for abandoned segments)

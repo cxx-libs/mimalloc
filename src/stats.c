@@ -61,7 +61,6 @@ void _mi_stat_decrease(mi_stat_count_t* stat, size_t amount) {
   mi_stat_update(stat, -((int64_t)amount));
 }
 
-
 static void mi_stat_adjust(mi_stat_count_t* stat, int64_t amount) {
   if (amount == 0) return;
   if mi_unlikely(mi_is_in_main(stat))
@@ -80,7 +79,6 @@ static void mi_stat_adjust(mi_stat_count_t* stat, int64_t amount) {
 void _mi_stat_adjust_decrease(mi_stat_count_t* stat, size_t amount) {
   mi_stat_adjust(stat, -((int64_t)amount));
 }
-
 
 // must be thread safe as it is called from stats_merge
 static void mi_stat_count_add_mt(mi_stat_count_t* stat, const mi_stat_count_t* src) {
@@ -243,7 +241,6 @@ static void mi_stat_average_print(int64_t count, int64_t total, const char* msg,
   _mi_fprintf(out, arg, "%10s: %5lld.%lld avg\n", msg, avg_whole, avg_frac1);
 }
 
-
 static void mi_print_header(mi_output_fun* out, void* arg ) {
   _mi_fprintf(out, arg, "%10s: %11s %11s %11s %11s %11s\n", "heap stats", "peak   ", "total   ", "current   ", "block   ", "total#   ");
 }
@@ -266,8 +263,6 @@ static void mi_stats_print_bins(const mi_stat_count_t* bins, size_t max, const c
   }
 }
 #endif
-
-
 
 //------------------------------------------------------------
 // Use an output wrapper for line-buffered output
@@ -420,7 +415,6 @@ void mi_thread_stats_print_out(mi_output_fun* out, void* arg) noexcept {
   _mi_stats_print(mi_stats_get_default(), out, arg);
 }
 
-
 // ----------------------------------------------------------------
 // Basic timer for convenience; use milli-seconds to avoid doubles
 // ----------------------------------------------------------------
@@ -443,7 +437,6 @@ mi_msecs_t _mi_clock_end(mi_msecs_t start) {
   mi_msecs_t end = _mi_clock_now();
   return (end - start - mi_clock_diff);
 }
-
 
 // --------------------------------------------------------
 // Basic process statistics
@@ -474,7 +467,6 @@ mi_decl_export void mi_process_info(size_t* elapsed_msecs, size_t* user_msecs, s
   if (page_faults!=NULL)    *page_faults    = pinfo.page_faults;
 }
 
-
 // --------------------------------------------------------
 // Return statistics
 // --------------------------------------------------------
@@ -485,7 +477,6 @@ bool mi_stats_get(mi_stats_t* stats) noexcept {
   _mi_memcpy(stats, &_mi_stats_main, sizeof(mi_stats_t));
   return true;
 }
-
 
 // --------------------------------------------------------
 // Statics in json format

@@ -9,7 +9,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #error "this file should be included from 'alloc.c' (so aliases can work)"
 #endif
 
-
 #if defined(MI_MALLOC_OVERRIDE) && !defined(_DLL)
 
 #if defined(__APPLE__)
@@ -47,7 +46,6 @@ typedef void* mi_nothrow_t;
   #define MI_FORWARD0(fun,x)      { fun(x); }
   #define MI_FORWARD02(fun,x,y)   { fun(x,y); }
 #endif
-
 
 #if defined(__APPLE__) && defined(MI_SHARED_LIB_EXPORT) && defined(MI_OSX_INTERPOSE)
   // define MI_OSX_IS_INTERPOSED as we should not provide forwarding definitions for

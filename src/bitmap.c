@@ -33,7 +33,6 @@ static inline size_t mi_bitmap_mask_(size_t count, size_t bitidx) {
   return ((((size_t)1 << count) - 1) << bitidx);
 }
 
-
 /* -----------------------------------------------------------
   Claim a bit sequence atomically
 ----------------------------------------------------------- */
@@ -139,7 +138,6 @@ bool _mi_bitmap_unclaim(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count, 
   return ((prev & mask) == mask);
 }
 
-
 // Set `count` bits at `bitmap_idx` to 1 atomically
 // Returns `true` if all `count` bits were 0 previously. `any_zero` is `true` if there was at least one zero bit.
 bool _mi_bitmap_claim(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count, mi_bitmap_index_t bitmap_idx, bool* any_zero) {
@@ -180,7 +178,6 @@ bool _mi_bitmap_try_claim(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count
   return true;
 }
 
-
 bool _mi_bitmap_is_claimed(mi_bitmap_t bitmap, size_t bitmap_fields, size_t count, mi_bitmap_index_t bitmap_idx) {
   return mi_bitmap_is_claimedx(bitmap, bitmap_fields, count, bitmap_idx, NULL);
 }
@@ -190,7 +187,6 @@ bool _mi_bitmap_is_any_claimed(mi_bitmap_t bitmap, size_t bitmap_fields, size_t 
   mi_bitmap_is_claimedx(bitmap, bitmap_fields, count, bitmap_idx, &any_ones);
   return any_ones;
 }
-
 
 //--------------------------------------------------------------------------
 // the `_across` functions work on bitmaps where sequences can cross over
@@ -288,7 +284,6 @@ rollback:
     return false;
   }
 }
-
 
 // Find `count` bits of zeros and set them to 1 atomically; returns `true` on success.
 // Starts at idx, and wraps around to search in all `bitmap_fields` fields.
@@ -395,7 +390,6 @@ bool _mi_bitmap_claim_across(mi_bitmap_t bitmap, size_t bitmap_fields, size_t co
   mi_assert_internal(all_zero ? one_count == 0 : one_count <= count);
   return all_zero;
 }
-
 
 // Returns `true` if all `count` bits were 1.
 // `any_ones` is `true` if there was at least one bit set to one.

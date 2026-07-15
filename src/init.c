@@ -11,7 +11,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #include <string.h>  // memcpy, memset
 #include <stdlib.h>  // atexit
 
-
 // Empty page used to initialize the small free pages array
 const mi_page_t _mi_page_empty = {
   0,
@@ -88,7 +87,6 @@ const mi_page_t _mi_page_empty = {
   { MI_INIT74(MI_STAT_COUNT_NULL) }, \
   { MI_INIT74(MI_STAT_COUNT_NULL) }
 
-
 // Empty slice span queues for every bin
 #define SQNULL(sz)  { NULL, NULL, sz }
 #define MI_SEGMENT_SPAN_QUEUES_EMPTY \
@@ -98,7 +96,6 @@ const mi_page_t _mi_page_empty = {
     SQNULL(    48), SQNULL(    56), SQNULL(    64), SQNULL(    80), SQNULL(    96), SQNULL(   112), SQNULL(   128), SQNULL(   160), /* 24 */ \
     SQNULL(   192), SQNULL(   224), SQNULL(   256), SQNULL(   320), SQNULL(   384), SQNULL(   448), SQNULL(   512), SQNULL(   640), /* 32 */ \
     SQNULL(   768), SQNULL(   896), SQNULL(  1024) /* 35 */ }
-
 
 // --------------------------------------------------------
 // Statically allocate an empty heap as the initial
@@ -225,7 +222,6 @@ void _mi_heap_guarded_init(mi_heap_t* heap) {
 }
 #endif
 
-
 static void mi_heap_main_init(void) {
   if (_mi_heap_main.cookie == 0) {
     _mi_heap_main.thread_id = _mi_thread_id();
@@ -299,8 +295,6 @@ void mi_subproc_add_current_thread(mi_subproc_id_t subproc_id) {
   heap->tld->segments.subproc = _mi_subproc_from_id(subproc_id);
 }
 
-
-
 /* -----------------------------------------------------------
   Initialization and freeing of the thread local heaps
 ----------------------------------------------------------- */
@@ -311,7 +305,6 @@ typedef struct mi_thread_data_s {
   mi_tld_t   tld;
   mi_memid_t memid;  // must come last due to zero'ing
 } mi_thread_data_t;
-
 
 // Thread meta-data is allocated directly from the OS. For
 // some programs that do not use thread pools and allocate and
@@ -464,8 +457,6 @@ static bool _mi_thread_heap_done(mi_heap_t* heap) {
   return false;
 }
 
-
-
 // --------------------------------------------------------
 // Try to run `mi_thread_done()` automatically so any memory
 // owned by the thread but not yet released can be abandoned
@@ -483,26 +474,25 @@ static bool _mi_thread_heap_done(mi_heap_t* heap) {
 // --------------------------------------------------------
 
 // Set up handlers so `mi_thread_done` is called automatically
-static void mi_process_setup_auto_thread_done(void) {
+static void mi_process_setup_auto_thread_done() {
   mi_atomic_do_once {
     _mi_prim_thread_init_auto_done();
     _mi_heap_set_default_direct(&_mi_heap_main);
   }
 }
 
-
-bool _mi_is_main_thread(void) {
+bool _mi_is_main_thread() {
   return (_mi_heap_main.thread_id==0 || _mi_heap_main.thread_id == _mi_thread_id());
 }
 
 static _Atomic(size_t) thread_count = MI_ATOMIC_VAR_INIT(1);
 
-size_t  _mi_current_thread_count(void) {
+size_t  _mi_current_thread_count() {
   return mi_atomic_load_relaxed(&thread_count);
 }
 
 // This is called from the `mi_malloc_generic`
-void mi_thread_init(void) noexcept
+void mi_thread_init() noexcept
 {
   // ensure our process has started already
   mi_process_init();
@@ -517,7 +507,7 @@ void mi_thread_init(void) noexcept
   //_mi_verbose_message("thread init: 0x%zx\n", _mi_thread_id());
 }
 
-void mi_thread_done(void) noexcept {
+void mi_thread_done() noexcept {
   _mi_thread_done(NULL);
 }
 
@@ -562,7 +552,7 @@ void _mi_heap_set_default_direct(mi_heap_t* heap)  {
   _mi_prim_thread_associate_default_heap(heap);
 }
 
-void mi_thread_set_in_threadpool(void) noexcept {
+void mi_thread_set_in_threadpool() noexcept {
   // nothing
 }
 
@@ -572,17 +562,17 @@ void mi_thread_set_in_threadpool(void) noexcept {
 static bool os_preloading = true;    // true until this module is initialized
 
 // Returns true if this module has not been initialized; Don't use C runtime routines until it returns false.
-bool mi_decl_noinline _mi_preloading(void) {
+bool mi_decl_noinline _mi_preloading() {
   return os_preloading;
 }
 
 // Returns true if mimalloc was redirected
-[[nodiscard]] bool mi_is_redirected(void) noexcept {
+[[nodiscard]] bool mi_is_redirected() noexcept {
   return _mi_is_redirected();
 }
 
 // Called once by the process loader from `src/prim/prim.c`
-void _mi_auto_process_init(void) {
+void _mi_auto_process_init() {
   mi_heap_main_init();
   #if defined(__APPLE__) || defined(MI_TLS_RECURSE_GUARD)
   volatile mi_heap_t* dummy = _mi_heap_default; // access TLS to allocate it before setting tls_initialized to true;
@@ -673,7 +663,6 @@ void mi_process_init(void) noexcept {
   }
 }
 
-
 // Called when the process is done 
 static void mi_process_done_once(void) {
   // only shutdown if we were initialized
@@ -720,7 +709,6 @@ static void mi_process_done_once(void) {
   _mi_verbose_message("process done: 0x%zx\n", _mi_heap_main.thread_id);
   os_preloading = true; // don't call the C runtime anymore
 }
-
 
 // Called when the process is done (cdecl as it is used with `at_exit` on some platforms)
 void mi_cdecl mi_process_done(void) noexcept {

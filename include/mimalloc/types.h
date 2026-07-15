@@ -21,7 +21,6 @@ terms of the MIT license. A copy of the license can be found in the file
 //                  using plain "page" for mimalloc pages (`mi_page_t`).
 // --------------------------------------------------------------------------
 
-
 #include <mimalloc-stats.h>
 #include <stddef.h>   // ptrdiff_t
 #include <stdint.h>   // uintptr_t, uint16_t, etc
@@ -91,13 +90,11 @@ terms of the MIT license. A copy of the license can be found in the file
 #define MI_PADDING_CHECK 1
 #endif
 
-
 // Encoded free lists allow detection of corrupted free lists
 // and can detect buffer overflows, modify after free, and double `free`s.
 #if (MI_SECURE>=3 || MI_DEBUG>=1)
 #define MI_ENCODE_FREELIST  1
 #endif
-
 
 // We used to abandon huge pages in order to eagerly deallocate it if freed from another thread.
 // Unfortunately, that makes it not possible to visit them during a heap walk or include them in a
@@ -105,7 +102,6 @@ terms of the MIT license. A copy of the license can be found in the file
 // another thread so the memory becomes "virtually" available (and eventually gets properly freed by
 // the owning thread).
 // #define MI_HUGE_PAGE_ABANDON 1
-
 
 // ------------------------------------------------------
 // Platform specific values
@@ -160,7 +156,6 @@ typedef int32_t  mi_ssize_t;
 #define MI_KiB     (MI_ZU(1024))
 #define MI_MiB     (MI_KiB*MI_KiB)
 #define MI_GiB     (MI_MiB*MI_KiB)
-
 
 // ------------------------------------------------------
 // Main internal data-structures
@@ -229,7 +224,6 @@ typedef int32_t  mi_ssize_t;
 #define MI_MAX_ALLOC_SIZE   PTRDIFF_MAX
 #endif
 
-
 // ------------------------------------------------------
 // Mimalloc pages contain allocated blocks
 // ------------------------------------------------------
@@ -253,7 +247,6 @@ typedef struct mi_block_s {
 #define MI_BLOCK_TAG_GUARDED   (~MI_BLOCK_TAG_ALIGNED)
 #endif
 
-
 // The delayed flags are used for efficient multi-threaded free-ing
 typedef enum mi_delayed_e {
   MI_USE_DELAYED_FREE   = 0, // push on the owning heap thread delayed list
@@ -261,7 +254,6 @@ typedef enum mi_delayed_e {
   MI_NO_DELAYED_FREE    = 2, // optimize: push on page local thread free queue if another block is already in the heap thread delayed free list
   MI_NEVER_DELAYED_FREE = 3  // sticky: used for abandoned pages without a owning heap; this only resets on page reclaim
 } mi_delayed_t;
-
 
 // The `in_full` and `has_aligned` page flags are put in a union to efficiently
 // test if both are false (`full_aligned == 0`) in the `mi_free` routine.
@@ -354,8 +346,6 @@ typedef struct mi_page_s {
   void* padding[1];
 } mi_page_t;
 
-
-
 // ------------------------------------------------------
 // Mimalloc segments contain mimalloc pages
 // ------------------------------------------------------
@@ -402,7 +392,6 @@ typedef struct mi_commit_mask_s {
 typedef mi_page_t  mi_slice_t;
 typedef int64_t    mi_msecs_t;
 
-
 // ---------------------------------------------------------------
 // a memory id tracks the provenance of arena/OS allocated memory
 // ---------------------------------------------------------------
@@ -443,7 +432,6 @@ typedef struct mi_memid_s {
   bool          initially_zero;     // `true` if the memory was originally zero initialized
   mi_memkind_t  memkind;
 } mi_memid_t;
-
 
 // -----------------------------------------------------------------------------------------
 // Segments are large allocated memory blocks (32mb on 64 bit) from arenas or the OS.
@@ -499,7 +487,6 @@ typedef struct mi_segment_s {
   mi_slice_t        slices[MI_SLICES_PER_SEGMENT+1];  // one extra final entry for huge blocks with large alignment
 } mi_segment_t;
 
-
 // ------------------------------------------------------
 // Heaps
 // Provide first-class heaps to allocate from.
@@ -533,7 +520,6 @@ typedef struct mi_random_cxt_s {
   bool     weak;
 } mi_random_ctx_t;
 
-
 // In debug mode there is a padding structure at the end of the blocks to check for buffer overflows
 #if (MI_PADDING)
 typedef struct mi_padding_s {
@@ -548,7 +534,6 @@ typedef struct mi_padding_s {
 #endif
 
 #define MI_PAGES_DIRECT   (MI_SMALL_WSIZE_MAX + MI_PADDING_WSIZE + 1)
-
 
 // A heap owns a set of pages.
 struct mi_heap_s {
@@ -578,7 +563,6 @@ struct mi_heap_s {
   mi_page_queue_t       pages[MI_BIN_FULL + 1];              // queue of pages for each size class (or "bin")
 };
 
-
 // ------------------------------------------------------
 // Sub processes do not reclaim or visit segments
 // from other sub processes. These are essentially the
@@ -594,7 +578,6 @@ struct mi_subproc_s {
   mi_segment_t*      abandoned_os_list_tail;  // the tail-end of the list
   mi_memid_t         memid;                   // provenance of this memory block
 };
-
 
 // ------------------------------------------------------
 // Thread Local data
@@ -632,7 +615,6 @@ struct mi_tld_s {
   mi_stats_t          stats;         // statistics
 };
 
-
 // ------------------------------------------------------
 // Debug
 // ------------------------------------------------------
@@ -646,7 +628,6 @@ struct mi_tld_s {
 #if !defined(MI_DEBUG_PADDING)
 #define MI_DEBUG_PADDING    (0xDE)
 #endif
-
 
 // ------------------------------------------------------
 // Statistics

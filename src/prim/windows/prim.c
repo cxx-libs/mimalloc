@@ -78,7 +78,6 @@ static PGetLargePageMinimum pGetLargePageMinimum = NULL;
 // Available after Windows XP
 typedef BOOL (__stdcall *PGetPhysicallyInstalledSystemMemory)( PULONGLONG TotalMemoryInKilobytes );
 
-
 //---------------------------------------------
 // Enable large page support dynamically (if possible)
 //---------------------------------------------
@@ -124,7 +123,6 @@ static bool win_enable_large_os_pages(size_t* large_page_size) {
   }
   return (_mi_os_large_page_size() > 0);
 }
-
 
 //---------------------------------------------
 // Initialize
@@ -189,7 +187,6 @@ void _mi_prim_mem_init( mi_os_mem_config_t* config )
   }
 }
 
-
 //---------------------------------------------
 // Free
 //---------------------------------------------
@@ -213,7 +210,6 @@ int _mi_prim_free(void* addr, size_t size ) {
   }
   return (int)errcode;
 }
-
 
 //---------------------------------------------
 // VirtualAlloc
@@ -333,7 +329,6 @@ int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool comm
   return (*addr != NULL ? 0 : (int)GetLastError());
 }
 
-
 //---------------------------------------------
 // Commit/Reset/Protect
 //---------------------------------------------
@@ -386,7 +381,6 @@ int _mi_prim_protect(void* addr, size_t size, bool protect) {
   return (ok ? 0 : (int)GetLastError());
 }
 
-
 //---------------------------------------------
 // Huge page allocation
 //---------------------------------------------
@@ -437,7 +431,6 @@ int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bo
   *addr = _mi_prim_alloc_huge_os_pagesx(hint_addr,size,numa_node);
   return (*addr != NULL ? 0 : (int)GetLastError());
 }
-
 
 //---------------------------------------------
 // Numa nodes
@@ -492,7 +485,6 @@ size_t _mi_prim_numa_node_count(void) {
   return ((size_t)numa_max + 1);
 }
 
-
 //----------------------------------------------------------------
 // Clock
 //----------------------------------------------------------------
@@ -513,7 +505,6 @@ mi_msecs_t _mi_prim_clock_now(void) {
   QueryPerformanceCounter(&t);
   return mi_to_msecs(t);
 }
-
 
 //----------------------------------------------------------------
 // Process Info
@@ -602,7 +593,6 @@ void _mi_prim_out_stderr( const char* msg )
   }
 }
 
-
 //----------------------------------------------------------------
 // Environment
 //----------------------------------------------------------------
@@ -616,7 +606,6 @@ int _mi_prim_getenv(const char* name, char* result, size_t result_size) {
   const size_t len = GetEnvironmentVariableA(name, result, (DWORD)result_size);
   return (len < result_size ? (len > 0 ? 1 /* success */ : 0 /* not found */) : -1 /* error */);
 }
-
 
 //----------------------------------------------------------------
 // Random
@@ -660,8 +649,6 @@ bool _mi_prim_random_buf(void* buf, size_t buf_len) {
 }
 
 #endif  // MI_USE_RTLGENRANDOM
-
-
 
 //----------------------------------------------------------------
 // Process & Thread Init/Done
@@ -713,7 +700,6 @@ static void NTAPI mi_win_main(PVOID module, DWORD reason, LPVOID reserved) {
     _mi_thread_done(NULL);
   }
 }
-
 
 /* -----------------------------------------------------------------------
    Auto initialize and finalize mimalloc on process and thread start/end.

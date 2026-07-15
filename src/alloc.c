@@ -379,8 +379,6 @@ void* _mi_heap_realloc_zero(mi_heap_t* heap, void* p, size_t newsize, bool zero,
   return mi_heap_recalloc(mi_prim_get_default_heap(), p, count, size);
 }
 
-
-
 // ------------------------------------------------------
 // strdup, strndup, and realpath
 // ------------------------------------------------------
@@ -575,7 +573,6 @@ static mi_decl_noinline void* mi_try_new(size_t size, bool nothrow) {
   return mi_heap_try_new(mi_prim_get_default_heap(), size, nothrow);
 }
 
-
 [[nodiscard]] mi_decl_restrict void* mi_heap_alloc_new(mi_heap_t* heap, size_t size) {
   void* p = mi_heap_malloc(heap,size);
   if mi_unlikely(p == NULL) return mi_heap_try_new(heap, size, false);
@@ -585,7 +582,6 @@ static mi_decl_noinline void* mi_try_new(size_t size, bool nothrow) {
 [[nodiscard]] mi_decl_restrict void* mi_new(size_t size) {
   return mi_heap_alloc_new(mi_prim_get_default_heap(), size);
 }
-
 
 [[nodiscard]] mi_decl_restrict void* mi_heap_alloc_new_n(mi_heap_t* heap, size_t count, size_t size) {
   size_t total;
@@ -601,7 +597,6 @@ static mi_decl_noinline void* mi_try_new(size_t size, bool nothrow) {
 [[nodiscard]] mi_decl_restrict void* mi_new_n(size_t count, size_t size) {
   return mi_heap_alloc_new_n(mi_prim_get_default_heap(), count, size);
 }
-
 
 [[nodiscard]] mi_decl_restrict void* mi_new_nothrow(size_t size) noexcept {
   void* p = mi_malloc(size);

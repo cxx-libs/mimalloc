@@ -36,7 +36,6 @@ int _mi_prim_free(void* addr, size_t size ) {
   return 0;
 }
 
-
 //---------------------------------------------
 // Allocation: sbrk or memory_grow
 //---------------------------------------------
@@ -127,7 +126,6 @@ int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool comm
   return (*addr != NULL ? 0 : ENOMEM);
 }
 
-
 //---------------------------------------------
 // Commit/Reset/Protect
 //---------------------------------------------
@@ -159,7 +157,6 @@ int _mi_prim_protect(void* addr, size_t size, bool protect) {
   return 0;
 }
 
-
 //---------------------------------------------
 // Huge pages and NUMA nodes
 //---------------------------------------------
@@ -171,14 +168,13 @@ int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bo
   return ENOSYS;
 }
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   return 0;
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   return 1;
 }
-
 
 //----------------------------------------------------------------
 // Clock
@@ -187,7 +183,7 @@ size_t _mi_prim_numa_node_count(void) {
 #include <time.h>
 
 // low resolution timer
-static mi_msecs_t mi_prim_clock_now_lowres(void) {
+static mi_msecs_t mi_prim_clock_now_lowres() {
   const int64_t ticks = (int64_t)clock();
   #if !defined(CLOCKS_PER_SEC) 
     return ticks;
@@ -204,7 +200,7 @@ static mi_msecs_t mi_prim_clock_now_lowres(void) {
   #endif
 }
 
-mi_msecs_t _mi_prim_clock_now(void) {
+mi_msecs_t _mi_prim_clock_now() {
   #if defined(CLOCK_REALTIME) || defined(CLOCK_MONOTONIC)
     #ifdef CLOCK_MONOTONIC
     const clockid_t clockid = CLOCK_MONOTONIC;
@@ -219,7 +215,6 @@ mi_msecs_t _mi_prim_clock_now(void) {
   return mi_prim_clock_now_lowres();  
 }
 
-
 //----------------------------------------------------------------
 // Process info
 //----------------------------------------------------------------
@@ -230,7 +225,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
   MI_UNUSED(pinfo);
 }
 
-
 //----------------------------------------------------------------
 // Output
 //----------------------------------------------------------------
@@ -238,7 +232,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
 void _mi_prim_out_stderr( const char* msg ) {
   fputs(msg,stderr);
 }
-
 
 //----------------------------------------------------------------
 // Environment
@@ -263,7 +256,6 @@ int _mi_prim_getenv(const char* name, char* result, size_t result_size) {
   return 1; // found
 }
 
-
 //----------------------------------------------------------------
 // Random
 //----------------------------------------------------------------
@@ -272,16 +264,15 @@ bool _mi_prim_random_buf(void* buf, size_t buf_len) {
   return false;
 }
 
-
 //----------------------------------------------------------------
 // Thread init/done
 //----------------------------------------------------------------
 
-void _mi_prim_thread_init_auto_done(void) {
+void _mi_prim_thread_init_auto_done() {
   // nothing
 }
 
-void _mi_prim_thread_done_auto_done(void) {
+void _mi_prim_thread_done_auto_done() {
   // nothing
 }
 

@@ -124,7 +124,6 @@ static inline intptr_t mi_atomic_subi(_Atomic(intptr_t)*p, intptr_t sub) {
   return (intptr_t)mi_atomic_addi(p, -sub);
 }
 
-
 // ----------------------------------------------------------------------
 // Once and Guard
 // ----------------------------------------------------------------------
@@ -138,8 +137,6 @@ typedef _Atomic(uintptr_t) mi_atomic_guard_t;
       _mi_guard_once && mi_atomic_cas_strong_acq_rel(guard,&_mi_guard_expected,(uintptr_t)1); \
       (mi_atomic_store_release(guard,(uintptr_t)0), _mi_guard_once = false) )
 
-
-
 // ----------------------------------------------------------------------
 // Yield
 // ----------------------------------------------------------------------
@@ -150,7 +147,7 @@ static inline void mi_atomic_yield(void) {
 }
 #elif defined(__SSE2__)
 #include <emmintrin.h>
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   _mm_pause();
 }
 #elif (defined(__GNUC__) || defined(__clang__)) && \
@@ -159,74 +156,74 @@ static inline void mi_atomic_yield(void) {
        defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) || defined(__POWERPC__) || \
        defined(__riscv))
 #if defined(__x86_64__) || defined(__i386__)
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile ("pause" ::: "memory");
 }
 #elif defined(__aarch64__)
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile("isb");
 }
 #elif defined(__arm__)
 #if __ARM_ARCH >= 7
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile("yield" ::: "memory");
 }
 #else
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile ("nop" ::: "memory");
 }
 #endif
 #elif defined(__powerpc__) || defined(__ppc__) || defined(__PPC__) || defined(__POWERPC__)
 #ifdef __APPLE__
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile ("or r27,r27,r27" ::: "memory");
 }
 #else
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ __volatile__ ("or 27,27,27" ::: "memory");
 }
 #endif
 #elif defined(__riscv)
 #if defined(__riscv_zihintpause)
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile("pause" ::: "memory");
 }
 #else
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   __asm__ volatile("nop" ::: "memory");
 }
 #endif
 #endif
 #elif defined(__sun)
 #include <synch.h>
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   smt_pause();
 }
 #elif defined(__wasi__)
 #include <sched.h>
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   sched_yield();
 }
 // Fallback for other archs
 #elif defined(__cplusplus)
 #include <thread>
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   std::this_thread::yield();
 }
 #else
 #include <unistd.h>
-static inline void mi_atomic_yield(void) {
+static inline void mi_atomic_yield() {
   sleep(0);
 }
 #endif
 
 #if defined(_WIN32)
-static inline void mi_sleep0(void) {
+static inline void mi_sleep0() {
   Sleep(0);
 }
 #else
 #include <unistd.h>
-static inline void mi_sleep0(void) {
+static inline void mi_sleep0() {
   sleep(0);
 }
 #endif
@@ -258,7 +255,6 @@ static inline void mi_atomic_yield_sleep( size_t* ticks, const size_t ticks_unti
 
 #define mi_lock(lock)                  for(bool _mi_go = (mi_lock_acquire(lock),true); _mi_go; (mi_lock_release(lock), _mi_go=false) )
 #define mi_lock_maybe(lock,acquire)    for(bool _mi_go = (acquire ? (mi_lock_acquire(lock),true) : true); _mi_go; _mi_go = (acquire ? (mi_lock_release(lock),false) : false) )
-
 
 #if defined(_WIN32)
 

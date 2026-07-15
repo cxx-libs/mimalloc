@@ -51,14 +51,13 @@ bool _mi_os_has_virtual_reserve(void) {
   return mi_os_mem_config.has_virtual_reserve;
 }
 
-
 // OS (small) page size
-size_t _mi_os_page_size(void) {
+size_t _mi_os_page_size() {
   return mi_os_mem_config.page_size;
 }
 
 // if large OS pages are supported (2 or 4MiB), then return the size, otherwise return the small page size (4KiB)
-size_t _mi_os_large_page_size(void) {
+size_t _mi_os_large_page_size() {
   return (mi_os_mem_config.large_page_size != 0 ? mi_os_mem_config.large_page_size : _mi_os_page_size());
 }
 
@@ -84,13 +83,11 @@ void _mi_os_init(void) {
   _mi_prim_mem_init(&mi_os_mem_config);
 }
 
-
 /* -----------------------------------------------------------
   Util
 -------------------------------------------------------------- */
 bool _mi_os_decommit(void* addr, size_t size);
 bool _mi_os_commit(void* addr, size_t size, bool* is_zero);
-
 
 /* -----------------------------------------------------------
   aligned hinting
@@ -201,7 +198,6 @@ void  _mi_os_free(void* p, size_t size, mi_memid_t memid) {
   _mi_os_free_ex(p, size, true, memid);
 }
 
-
 /* -----------------------------------------------------------
    Primitive allocation from the OS.
 -------------------------------------------------------------- */
@@ -229,8 +225,6 @@ static void* mi_os_prim_alloc_at(void* hint_addr, size_t size, size_t try_alignm
     _mi_warning_message("unable to allocate OS memory (error: %d (0x%x), addr: %p, size: 0x%zx bytes, align: 0x%zx, commit: %d, allow large: %d)\n", err, err, hint_addr, size, try_alignment, commit, allow_large);
   }
 
-
-
   mi_os_stat_counter_increase(mmap_calls, 1);
   if (p != NULL) {
     mi_os_stat_increase(reserved, size);
@@ -249,7 +243,6 @@ static void* mi_os_prim_alloc_at(void* hint_addr, size_t size, size_t try_alignm
 static void* mi_os_prim_alloc(size_t size, size_t try_alignment, bool commit, bool allow_large, bool* is_large, bool* is_zero) {
   return mi_os_prim_alloc_at(NULL, size, try_alignment, commit, allow_large, is_large, is_zero);
 }
-
 
 // Primitive aligned allocation from the OS.
 // This function guarantees the allocated memory is aligned.
@@ -329,7 +322,6 @@ static void* mi_os_prim_alloc_aligned(size_t size, size_t alignment, bool commit
   return p;
 }
 
-
 /* -----------------------------------------------------------
   OS API: alloc and alloc_aligned
 ----------------------------------------------------------- */
@@ -365,7 +357,6 @@ void* _mi_os_alloc_aligned(size_t size, size_t alignment, bool commit, bool allo
   if (commit) { mi_assert_internal(memid->initially_committed); }
   return p;
 }
-
 
 [[nodiscard]] static void* mi_os_ensure_zero(void* p, size_t size, mi_memid_t* memid) {
   if (p==NULL || size==0) return p;
@@ -513,7 +504,6 @@ bool _mi_os_decommit(void* addr, size_t size) {
   return mi_os_decommit_ex(addr, size, &needs_recommit, size);
 }
 
-
 // Signal to the OS that the address range is no longer in use
 // but may be used later again. This will release physical memory
 // pages and reduce swapping while keeping the memory committed.
@@ -536,7 +526,6 @@ bool _mi_os_reset(void* addr, size_t size) {
   }
   return (err == 0);
 }
-
 
 void _mi_os_reuse( void* addr, size_t size ) {
   // page align conservatively within the range
@@ -603,8 +592,6 @@ bool _mi_os_protect(void* addr, size_t size) {
 bool _mi_os_unprotect(void* addr, size_t size) {
   return mi_os_protectx(addr, size, false);
 }
-
-
 
 /* ----------------------------------------------------------------------------
 Support for allocating huge OS pages (1Gib) that are reserved up-front
@@ -735,7 +722,6 @@ static void mi_os_free_huge_os_pages(void* p, size_t size) {
   }
 }
 
-
 /* ----------------------------------------------------------------------------
 Support NUMA aware allocation
 -----------------------------------------------------------------------------*/
@@ -771,7 +757,7 @@ static int mi_os_numa_node_get(void) {
   return numa_node;
 }
 
-int _mi_os_numa_node(void) {
+int _mi_os_numa_node() {
   if mi_likely(mi_atomic_load_relaxed(&mi_numa_node_count) == 1) {
     return 0;
   }

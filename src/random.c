@@ -19,7 +19,6 @@ we use a cryptographically secure generator (chacha20).
 
 #define MI_CHACHA_ROUNDS (20)   // perhaps use 12 for better performance?
 
-
 /* ----------------------------------------------------------------------------
 Chacha20 implementation as the original algorithm with a 64-bit nonce
 and counter: https://en.wikipedia.org/wiki/Salsa20
@@ -126,7 +125,6 @@ static void chacha_split(mi_random_ctx_t* ctx, uint64_t nonce, mi_random_ctx_t* 
   chacha_block(ctx_new);
 }
 
-
 /* ----------------------------------------------------------------------------
 Random interface
 -----------------------------------------------------------------------------*/
@@ -157,7 +155,6 @@ uintptr_t _mi_random_next(mi_random_ctx_t* ctx) {
   } while (r==0);
   return r;
 }
-
 
 /* ----------------------------------------------------------------------------
 To initialize a fresh random context.

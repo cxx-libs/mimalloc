@@ -93,7 +93,6 @@ int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool comm
   return 0;
 }
 
-
 //---------------------------------------------
 // Commit/Reset
 //---------------------------------------------
@@ -126,7 +125,6 @@ int _mi_prim_protect(void* addr, size_t size, bool protect) {
   return 0;
 }
 
-
 //---------------------------------------------
 // Huge pages and NUMA nodes
 //---------------------------------------------
@@ -138,14 +136,13 @@ int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bo
   return ENOSYS;
 }
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   return 0;
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   return 1;
 }
-
 
 //----------------------------------------------------------------
 // Clock
@@ -153,10 +150,9 @@ size_t _mi_prim_numa_node_count(void) {
 
 #include <emscripten/html5.h>
 
-mi_msecs_t _mi_prim_clock_now(void) {
+mi_msecs_t _mi_prim_clock_now() {
   return emscripten_date_now();
 }
-
 
 //----------------------------------------------------------------
 // Process info
@@ -168,7 +164,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
   MI_UNUSED(pinfo);
 }
 
-
 //----------------------------------------------------------------
 // Output
 //----------------------------------------------------------------
@@ -178,7 +173,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
 void _mi_prim_out_stderr( const char* msg) {
   emscripten_console_error(msg);
 }
-
 
 //----------------------------------------------------------------
 // Environment
@@ -192,7 +186,6 @@ int _mi_prim_getenv(const char* name, char* result, size_t result_size) {
   return 0; // not found
 }
 
-
 //----------------------------------------------------------------
 // Random
 //----------------------------------------------------------------
@@ -201,7 +194,6 @@ bool _mi_prim_random_buf(void* buf, size_t buf_len) {
   int err = getentropy(buf, buf_len);
   return !err;
 }
-
 
 //----------------------------------------------------------------
 // Thread init/done
@@ -238,11 +230,11 @@ void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
 
 #else
 
-void _mi_prim_thread_init_auto_done(void) {
+void _mi_prim_thread_init_auto_done() {
   // nothing
 }
 
-void _mi_prim_thread_done_auto_done(void) {
+void _mi_prim_thread_done_auto_done() {
   // nothing
 }
 

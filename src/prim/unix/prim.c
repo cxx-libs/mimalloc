@@ -113,13 +113,11 @@ static inline int mi_prim_access(const char *fpath, int mode) {
 
 #endif
 
-
-
 //---------------------------------------------
 // init
 //---------------------------------------------
 
-static bool unix_detect_overcommit(void) {
+static bool unix_detect_overcommit() {
   bool os_overcommit = true;
   #if defined(__linux__)
     int fd = mi_prim_open("/proc/sys/vm/overcommit_memory", O_RDONLY);
@@ -213,7 +211,6 @@ void _mi_prim_mem_init( mi_os_mem_config_t* config )
   #endif
 }
 
-
 //---------------------------------------------
 // free
 //---------------------------------------------
@@ -223,7 +220,6 @@ int _mi_prim_free(void* addr, size_t size ) {
   bool err = (munmap(addr, size) == -1);
   return (err ? errno : 0);
 }
-
 
 //---------------------------------------------
 // mmap
@@ -301,7 +297,7 @@ static void* unix_mmap_prim_aligned(void* addr, size_t size, size_t try_alignmen
   return NULL;
 }
 
-static int unix_mmap_fd(void) {
+static int unix_mmap_fd() {
   #if defined(VM_MAKE_TAG)
   // macOS: tracking anonymous page with a specific ID. (All up to 98 are taken officially but LLVM sanitizers had taken 99)
   int os_tag = (int)mi_option_get(mi_option_os_tag);
@@ -425,7 +421,6 @@ int _mi_prim_alloc(void* hint_addr, size_t size, size_t try_alignment, bool comm
   return (*addr != NULL ? 0 : errno);
 }
 
-
 //---------------------------------------------
 // Commit/Reset
 //---------------------------------------------
@@ -527,8 +522,6 @@ int _mi_prim_protect(void* start, size_t size, bool protect) {
   return err;
 }
 
-
-
 //---------------------------------------------
 // Huge page allocation
 //---------------------------------------------
@@ -585,7 +578,7 @@ int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bo
 
 #if defined(__linux__)
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   #if defined(MI_HAS_SYSCALL_H) && defined(SYS_getcpu)
     unsigned long node = 0;
     unsigned long ncpu = 0;
@@ -597,7 +590,7 @@ size_t _mi_prim_numa_node(void) {
   #endif
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   char buf[128];
   unsigned node = 0;
   for(node = 0; node < 256; node++) {
@@ -610,7 +603,7 @@ size_t _mi_prim_numa_node_count(void) {
 
 #elif defined(__FreeBSD__) && __FreeBSD_version >= 1200000
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   domainset_t dom;
   size_t node;
   int policy;
@@ -621,7 +614,7 @@ size_t _mi_prim_numa_node(void) {
   return 0ul;
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   size_t ndomains = 0;
   size_t len = sizeof(ndomains);
   if (sysctlbyname("vm.ndomains", &ndomains, &len, NULL, 0) == -1) return 0ul;
@@ -630,12 +623,12 @@ size_t _mi_prim_numa_node_count(void) {
 
 #elif defined(__DragonFly__)
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   // TODO: DragonFly does not seem to provide any userland means to get this information.
   return 0ul;
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   size_t ncpus = 0, nvirtcoresperphys = 0;
   size_t len = sizeof(size_t);
   if (sysctlbyname("hw.ncpu", &ncpus, &len, NULL, 0) == -1) return 0ul;
@@ -645,11 +638,11 @@ size_t _mi_prim_numa_node_count(void) {
 
 #else
 
-size_t _mi_prim_numa_node(void) {
+size_t _mi_prim_numa_node() {
   return 0;
 }
 
-size_t _mi_prim_numa_node_count(void) {
+size_t _mi_prim_numa_node_count() {
   return 1;
 }
 
@@ -662,7 +655,7 @@ size_t _mi_prim_numa_node_count(void) {
 #include <time.h>
 
 // low resolution timer
-static mi_msecs_t mi_prim_clock_now_lowres(void) {
+static mi_msecs_t mi_prim_clock_now_lowres() {
   const int64_t ticks = (int64_t)clock();
   #if !defined(CLOCKS_PER_SEC) 
     return ticks;
@@ -679,7 +672,7 @@ static mi_msecs_t mi_prim_clock_now_lowres(void) {
   #endif
 }
 
-mi_msecs_t _mi_prim_clock_now(void) {
+mi_msecs_t _mi_prim_clock_now() {
   #if defined(CLOCK_REALTIME) || defined(CLOCK_MONOTONIC)
     #ifdef CLOCK_MONOTONIC
     const clockid_t clockid = CLOCK_MONOTONIC;
@@ -693,7 +686,6 @@ mi_msecs_t _mi_prim_clock_now(void) {
   #endif  
   return mi_prim_clock_now_lowres();  
 }
-
 
 //----------------------------------------------------------------
 // Process info
@@ -772,7 +764,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
 
 #endif
 
-
 //----------------------------------------------------------------
 // Output
 //----------------------------------------------------------------
@@ -780,7 +771,6 @@ void _mi_prim_process_info(mi_process_info_t* pinfo)
 void _mi_prim_out_stderr( const char* msg ) {
   fputs(msg,stderr);
 }
-
 
 //----------------------------------------------------------------
 // Environment
@@ -838,7 +828,6 @@ int _mi_prim_getenv(const char* name, char* result, size_t result_size) {
   return 1;  // success
 }
 #endif  // !MI_USE_ENVIRON
-
 
 //----------------------------------------------------------------
 // Random
@@ -915,7 +904,6 @@ bool _mi_prim_random_buf(void* buf, size_t buf_len) {
 
 #endif
 
-
 //----------------------------------------------------------------
 // Thread init/done
 //----------------------------------------------------------------
@@ -955,11 +943,11 @@ void _mi_prim_thread_associate_default_heap(mi_heap_t* heap) {
 
 #else
 
-void _mi_prim_thread_init_auto_done(void) {
+void _mi_prim_thread_init_auto_done() {
   // nothing
 }
 
-void _mi_prim_thread_done_auto_done(void) {
+void _mi_prim_thread_done_auto_done() {
   // nothing
 }
 

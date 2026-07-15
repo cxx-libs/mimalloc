@@ -78,13 +78,13 @@ int _mi_prim_protect(void* addr, size_t size, bool protect);
 int _mi_prim_alloc_huge_os_pages(void* hint_addr, size_t size, int numa_node, bool* is_zero, void** addr);
 
 // Return the current NUMA node
-size_t _mi_prim_numa_node(void);
+size_t _mi_prim_numa_node();
 
 // Return the number of logical NUMA nodes
-size_t _mi_prim_numa_node_count(void);
+size_t _mi_prim_numa_node_count();
 
 // Clock ticks
-mi_msecs_t _mi_prim_clock_now(void);
+mi_msecs_t _mi_prim_clock_now();
 
 // Return process information (only for statistics)
 typedef struct mi_process_info_s {
@@ -110,20 +110,18 @@ void _mi_prim_out_stderr( const char* msg );
 // and -1 on error (for example, if `getenv` cannot be called yet during preloading).
 int _mi_prim_getenv(const char* name, char* result, size_t result_size);
 
-
 // Fill a buffer with strong randomness; return `false` on error or if
 // there is no strong randomization available.
 bool _mi_prim_random_buf(void* buf, size_t buf_len);
 
 // Called on the first thread start, and should ensure `_mi_thread_done` is called on thread termination.
-void _mi_prim_thread_init_auto_done(void);
+void _mi_prim_thread_init_auto_done();
 
 // Called on process exit and may take action to clean up resources associated with the thread auto done.
-void _mi_prim_thread_done_auto_done(void);
+void _mi_prim_thread_done_auto_done();
 
 // Called when the default heap for a thread changes
 void _mi_prim_thread_associate_default_heap(mi_heap_t* heap);
-
 
 //-------------------------------------------------------------------
 // Access to TLS (thread local storage) slots.
@@ -250,8 +248,6 @@ static inline void mi_prim_tls_slot_set(size_t slot, void* value) noexcept {
 
 #endif
 
-
-
 //-------------------------------------------------------------------
 // Get a fast unique thread id.
 //
@@ -261,7 +257,6 @@ static inline void mi_prim_tls_slot_set(size_t slot, void* value) noexcept {
 // We only require _mi_prim_thread_id() to return a unique id
 // for each thread (unequal to zero).
 //-------------------------------------------------------------------
-
 
 // Do we have __builtin_thread_pointer? This would be the preferred way to get a unique thread id
 // but unfortunately, it seems we cannot test for this reliably at this time (see issue #883)
@@ -281,18 +276,16 @@ static inline void mi_prim_tls_slot_set(size_t slot, void* value) noexcept {
   #endif
 #endif
 
-
-
 // defined in `init.c`; do not use these directly
 extern mi_decl_hidden thread_local mi_heap_t* _mi_heap_default;  // default heap to allocate from
 extern mi_decl_hidden bool _mi_process_is_initialized;             // has mi_process_init been called?
 
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept;
+static inline mi_threadid_t _mi_prim_thread_id() noexcept;
 
 // Get a unique id for the current thread.
 #if defined(MI_PRIM_THREAD_ID)
 
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
+static inline mi_threadid_t _mi_prim_thread_id() noexcept {
   const mi_threadid_t tid = MI_PRIM_THREAD_ID();  // used for example by CPython for a free threaded build (see python/cpython#115488)
   mi_assert_internal( (tid & 0x03) == 0 );        // mimalloc reserves the bottom 2 bits
   return tid;
@@ -300,21 +293,21 @@ static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
 
 #elif defined(_WIN32)
 
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
+static inline mi_threadid_t _mi_prim_thread_id() noexcept {
   // Windows: works on Intel and ARM in both 32- and 64-bit
   return (uintptr_t)NtCurrentTeb();
 }
 
 #elif MI_USE_BUILTIN_THREAD_POINTER
 
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
+static inline mi_threadid_t _mi_prim_thread_id() noexcept {
   // Works on most Unix based platforms with recent compilers
   return (uintptr_t)__builtin_thread_pointer();
 }
 
 #elif MI_HAS_TLS_SLOT
 
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
+static inline mi_threadid_t _mi_prim_thread_id() noexcept {
   #if defined(__BIONIC__)
     // issue #384, #495: on the Bionic libc (Android), slot 1 is the thread id
     // see: https://github.com/aosp-mirror/platform_bionic/blob/c44b1d0676ded732df4b3b21c5f798eacae93228/libc/platform/bionic/tls_defines.h#L86
@@ -330,13 +323,11 @@ static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
 #else
 
 // otherwise use portable C, taking the address of a thread local variable (this is still very fast on most platforms).
-static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
+static inline mi_threadid_t _mi_prim_thread_id() noexcept {
   return (uintptr_t)&_mi_heap_default;
 }
 
 #endif
-
-
 
 /* ----------------------------------------------------------------------------------------
 Get the thread local default heap: `_mi_prim_get_default_heap()`
@@ -356,7 +347,7 @@ We try to circumvent this in an efficient way:
 - DragonFly: defaults are working but seem slow compared to freeBSD (see PR #323)
 ------------------------------------------------------------------------------------------- */
 
-static inline mi_heap_t* mi_prim_get_default_heap(void);
+static inline mi_heap_t* mi_prim_get_default_heap();
 
 #if defined(MI_MALLOC_OVERRIDE)
 #if defined(__APPLE__) // macOS
@@ -376,13 +367,12 @@ static inline mi_heap_t* mi_prim_get_default_heap(void);
 #endif
 #endif
 
-
 #if MI_TLS_SLOT
 # if !defined(MI_HAS_TLS_SLOT)
 #  error "trying to use a TLS slot for the default heap, but the mi_prim_tls_slot primitives are not defined"
 # endif
 
-static inline mi_heap_t* mi_prim_get_default_heap(void) {
+static inline mi_heap_t* mi_prim_get_default_heap() {
   mi_heap_t* heap = (mi_heap_t*)mi_prim_tls_slot(MI_TLS_SLOT);
   #if MI_HAS_TLS_SLOT == 1   // check if the TLS slot is initialized
   if mi_unlikely(heap == NULL) {
@@ -397,7 +387,7 @@ static inline mi_heap_t* mi_prim_get_default_heap(void) {
 
 #elif defined(MI_TLS_PTHREAD_SLOT_OFS)
 
-static inline mi_heap_t** mi_prim_tls_pthread_heap_slot(void) {
+static inline mi_heap_t** mi_prim_tls_pthread_heap_slot() {
   pthread_t self = pthread_self();
   #if defined(__DragonFly__)
   if (self==NULL) return NULL;
@@ -405,7 +395,7 @@ static inline mi_heap_t** mi_prim_tls_pthread_heap_slot(void) {
   return (mi_heap_t**)((uint8_t*)self + MI_TLS_PTHREAD_SLOT_OFS);
 }
 
-static inline mi_heap_t* mi_prim_get_default_heap(void) {
+static inline mi_heap_t* mi_prim_get_default_heap() {
   mi_heap_t** pheap = mi_prim_tls_pthread_heap_slot();
   if mi_unlikely(pheap == NULL) return _mi_heap_main_get();
   mi_heap_t* heap = *pheap;
@@ -416,14 +406,14 @@ static inline mi_heap_t* mi_prim_get_default_heap(void) {
 #elif defined(MI_TLS_PTHREAD)
 
 extern mi_decl_hidden pthread_key_t _mi_heap_default_key;
-static inline mi_heap_t* mi_prim_get_default_heap(void) {
+static inline mi_heap_t* mi_prim_get_default_heap() {
   mi_heap_t* heap = (mi_unlikely(_mi_heap_default_key == (pthread_key_t)(-1)) ? _mi_heap_main_get() : (mi_heap_t*)pthread_getspecific(_mi_heap_default_key));
   return (mi_unlikely(heap == NULL) ? (mi_heap_t*)&_mi_heap_empty : heap);
 }
 
 #else // default using a thread local variable; used on most platforms.
 
-static inline mi_heap_t* mi_prim_get_default_heap(void) {
+static inline mi_heap_t* mi_prim_get_default_heap() {
   #if defined(MI_TLS_RECURSE_GUARD)
   if (mi_unlikely(!_mi_process_is_initialized)) return _mi_heap_main_get();
   #endif
@@ -431,6 +421,5 @@ static inline mi_heap_t* mi_prim_get_default_heap(void) {
 }
 
 #endif  // mi_prim_get_default_heap()
-
 
 #endif  // MIMALLOC_PRIM_H

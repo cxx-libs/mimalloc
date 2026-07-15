@@ -63,14 +63,14 @@ terms of the MIT license. A copy of the license can be found in the file
 
 // Generic allocator init/done callback
 #ifndef MI_PRIM_HAS_ALLOCATOR_INIT
-bool _mi_is_redirected(void) {
+bool _mi_is_redirected() {
   return false;
 }
 bool _mi_allocator_init(const char** message) {
   if (message != NULL) { *message = NULL; }
   return true;
 }
-void _mi_allocator_done(void) {
+void _mi_allocator_done() {
   // nothing to do
 }
 #endif

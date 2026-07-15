@@ -167,7 +167,6 @@ static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_generic(mi_heap_t* 
   return mi_heap_malloc_zero_aligned_at_overalloc(heap,size,alignment,offset,zero,usable);
 }
 
-
 // Primitive aligned allocation
 static void* mi_heap_malloc_zero_aligned_at(mi_heap_t* const heap, const size_t size, 
                                             const size_t alignment, const size_t offset, const bool zero,
@@ -209,7 +208,6 @@ static void* mi_heap_malloc_zero_aligned_at(mi_heap_t* const heap, const size_t 
   // fallback to generic aligned allocation
   return mi_heap_malloc_zero_aligned_at_generic(heap, size, alignment, offset, zero, usable);
 }
-
 
 // ------------------------------------------------------
 // Optimized mi_heap_malloc_aligned / mi_malloc_aligned
@@ -281,7 +279,6 @@ void* _mi_extern_heap_malloc_aligned = (void*)&mi_heap_malloc_aligned;
 [[nodiscard]] mi_decl_restrict void* mi_calloc_aligned(size_t count, size_t size, size_t alignment) noexcept {
   return mi_heap_calloc_aligned(mi_prim_get_default_heap(), count, size, alignment);
 }
-
 
 // ------------------------------------------------------
 // Aligned re-allocation
