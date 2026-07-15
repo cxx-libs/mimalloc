@@ -59,9 +59,9 @@ typedef struct mi_arena_s {
 #define MI_MAX_ARENAS         (132)                    // Limited as the reservation exponentially increases (and takes up .bss)
 
 // The available arenas
-static mi_decl_cache_align _Atomic(mi_arena_t*) mi_arenas[MI_MAX_ARENAS];
-static mi_decl_cache_align _Atomic(size_t)      mi_arena_count; // = 0
-static mi_decl_cache_align _Atomic(int64_t)     mi_arenas_purge_expire; // set if there exist purgeable arenas
+alignas(64) static _Atomic(mi_arena_t*) mi_arenas[MI_MAX_ARENAS];
+alignas(64) static _Atomic(size_t)      mi_arena_count; // = 0
+alignas(64) static _Atomic(int64_t)     mi_arenas_purge_expire; // set if there exist purgeable arenas
 
 #define MI_IN_ARENA_C
 #include "arena-abandon.c"
@@ -154,8 +154,8 @@ bool mi_arena_memid_indices(mi_memid_t memid, size_t* arena_index, mi_bitmap_ind
 
 #define MI_ARENA_STATIC_MAX  ((MI_INTPTR_SIZE/2)*MI_KiB)  // 4 KiB on 64-bit
 
-static mi_decl_cache_align uint8_t mi_arena_static[MI_ARENA_STATIC_MAX];  // must be cache aligned, see issue #895
-static mi_decl_cache_align _Atomic(size_t) mi_arena_static_top;
+alignas(64) static uint8_t mi_arena_static[MI_ARENA_STATIC_MAX];  // must be cache aligned, see issue #895
+alignas(64) static _Atomic(size_t) mi_arena_static_top;
 
 static void* mi_arena_static_zalloc(size_t size, size_t alignment, mi_memid_t* memid) {
   *memid = _mi_memid_none();

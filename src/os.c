@@ -100,7 +100,7 @@ bool _mi_os_commit(void* addr, size_t size, bool* is_zero);
 // the 2TiB to 30TiB area to allocate those. If we have at least 46 bits of virtual address
 // space (64TiB) we use this technique. (but see issue #939)
 #if (MI_INTPTR_SIZE >= 8) && !defined(MI_NO_ALIGNED_HINT)
-static mi_decl_cache_align _Atomic(uintptr_t)aligned_base;
+alignas(64) static _Atomic(uintptr_t)aligned_base;
 
 // Return a MI_SEGMENT_SIZE aligned address that is probably available.
 // If this returns NULL, the OS will determine the address but on some OS's that may not be
@@ -615,7 +615,7 @@ and possibly associated with a specific NUMA node. (use `numa_node>=0`)
 
 #if (MI_INTPTR_SIZE >= 8)
 // To ensure proper alignment, use our own area for huge OS pages
-static mi_decl_cache_align _Atomic(uintptr_t)  mi_huge_start; // = 0
+alignas(64) static _Atomic(uintptr_t)  mi_huge_start; // = 0
 
 // Claim an aligned address range for huge pages
 static uint8_t* mi_os_claim_huge_pages(size_t pages, size_t* total_size) {

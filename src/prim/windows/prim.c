@@ -668,7 +668,7 @@ bool _mi_prim_random_buf(void* buf, size_t buf_len) {
 //----------------------------------------------------------------
 
 #if MI_WIN_USE_FIXED_TLS==1
-mi_decl_cache_align size_t _mi_win_tls_offset = 0;
+alignas(64) size_t _mi_win_tls_offset = 0;
 #endif
 
 //static void mi_debug_out(const char* s) {

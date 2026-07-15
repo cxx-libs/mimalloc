@@ -27,19 +27,15 @@ terms of the MIT license. A copy of the license can be found in the file
 #define mi_trace_message(...)
 #endif
 
-#define mi_decl_cache_align     mi_decl_align(64)
-
 #if defined(_MSC_VER)
 #pragma warning(disable:4127)   // suppress constant conditional warning (due to MI_SECURE paths)
 #pragma warning(disable:26812)  // unscoped enum warning
 #define mi_decl_noinline        __declspec(noinline)
-#define mi_decl_align(a)        __declspec(align(a))
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
 #elif (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__clang__) // includes clang and icc
 #define mi_decl_noinline        __attribute__((noinline))
-#define mi_decl_align(a)        __attribute__((aligned(a)))
 #define mi_decl_weak            __attribute__((weak))
 #define mi_decl_hidden          __attribute__((visibility("hidden")))
 #if (__GNUC__ >= 4) || defined(__clang__)
@@ -49,13 +45,11 @@ terms of the MIT license. A copy of the license can be found in the file
 #endif
 #elif __cplusplus >= 201103L    // c++11
 #define mi_decl_noinline
-#define mi_decl_align(a)        alignas(a)
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
 #else
 #define mi_decl_noinline
-#define mi_decl_align(a)
 #define mi_decl_weak
 #define mi_decl_hidden
 #define mi_decl_cold
@@ -126,8 +120,8 @@ uintptr_t   _mi_os_random_weak(uintptr_t extra_seed);
 static inline uintptr_t _mi_random_shuffle(uintptr_t x);
 
 // init.c
-extern mi_decl_hidden mi_decl_cache_align mi_stats_t       _mi_stats_main;
-extern mi_decl_hidden mi_decl_cache_align const mi_page_t  _mi_page_empty;
+extern mi_decl_hidden alignas(64) mi_stats_t       _mi_stats_main;
+extern mi_decl_hidden alignas(64) const mi_page_t  _mi_page_empty;
 void        _mi_auto_process_init(void);
 void mi_cdecl _mi_auto_process_done(void) noexcept;
 bool        _mi_is_redirected(void);

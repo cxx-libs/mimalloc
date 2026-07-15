@@ -109,7 +109,7 @@ const mi_page_t _mi_page_empty = {
 // may lead to allocation itself on some platforms)
 // --------------------------------------------------------
 
-mi_decl_cache_align const mi_heap_t _mi_heap_empty = {
+alignas(64) const mi_heap_t _mi_heap_empty = {
   NULL,
   MI_ATOMIC_VAR_INIT(NULL),
   0,                // tid
@@ -131,11 +131,11 @@ mi_decl_cache_align const mi_heap_t _mi_heap_empty = {
   MI_PAGE_QUEUES_EMPTY
 };
 
-static mi_decl_cache_align mi_subproc_t mi_subproc_default;
+alignas(64) static mi_subproc_t mi_subproc_default;
 
 #define tld_empty_stats  ((mi_stats_t*)((uint8_t*)&tld_empty + offsetof(mi_tld_t,stats)))
 
-mi_decl_cache_align static const mi_tld_t tld_empty = {
+alignas(64) static const mi_tld_t tld_empty = {
   0,
   false,
   NULL, NULL,
@@ -154,14 +154,14 @@ thread_local mi_heap_t* _mi_heap_default = (mi_heap_t*)&_mi_heap_empty;
 
 extern mi_decl_hidden mi_heap_t _mi_heap_main;
 
-static mi_decl_cache_align mi_tld_t tld_main = {
+alignas(64) static mi_tld_t tld_main = {
   0, false,
   &_mi_heap_main, & _mi_heap_main,
   { MI_SEGMENT_SPAN_QUEUES_EMPTY, 0, 0, 0, 0, 0, &mi_subproc_default, &tld_main.stats }, // segments
   { sizeof(mi_stats_t), MI_STAT_VERSION, MI_STATS_NULL }       // stats
 };
 
-mi_decl_cache_align mi_heap_t _mi_heap_main = {
+alignas(64) mi_heap_t _mi_heap_main = {
   &tld_main,
   MI_ATOMIC_VAR_INIT(NULL),
   0,                // thread id
@@ -608,8 +608,8 @@ void _mi_auto_process_init(void) {
 
 #if defined(_WIN32) && (defined(_M_IX86) || defined(_M_X64))
 #include <intrin.h>
-mi_decl_cache_align bool _mi_cpu_has_fsrm = false;
-mi_decl_cache_align bool _mi_cpu_has_erms = false;
+alignas(64) bool _mi_cpu_has_fsrm = false;
+alignas(64) bool _mi_cpu_has_erms = false;
 
 static void mi_detect_cpu_features(void) {
   // FSRM for fast short rep movsb/stosb support (AMD Zen3+ (~2020) or Intel Ice Lake+ (~2017))
