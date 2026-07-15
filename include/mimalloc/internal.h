@@ -137,7 +137,7 @@ static inline uintptr_t _mi_random_shuffle(uintptr_t x);
 extern mi_decl_hidden mi_decl_cache_align mi_stats_t       _mi_stats_main;
 extern mi_decl_hidden mi_decl_cache_align const mi_page_t  _mi_page_empty;
 void        _mi_auto_process_init(void);
-void mi_cdecl _mi_auto_process_done(void) mi_attr_noexcept;
+void mi_cdecl _mi_auto_process_done(void) noexcept;
 bool        _mi_is_redirected(void);
 bool        _mi_allocator_init(const char** message);
 void        _mi_allocator_done(void);
@@ -147,7 +147,7 @@ bool        _mi_preloading(void);           // true while the C runtime is not i
 void        _mi_thread_done(mi_heap_t* heap);
 void        _mi_thread_data_collect(void);
 void        _mi_tld_init(mi_tld_t* tld, mi_heap_t* bheap);
-mi_threadid_t _mi_thread_id(void) mi_attr_noexcept;
+mi_threadid_t _mi_thread_id(void) noexcept;
 mi_heap_t*    _mi_heap_main_get(void);     // statically allocated main backing heap
 mi_subproc_t* _mi_subproc_from_id(mi_subproc_id_t subproc_id);
 void        _mi_heap_guarded_init(mi_heap_t* heap);
@@ -239,9 +239,9 @@ bool       _mi_segment_attempt_reclaim(mi_heap_t* heap, mi_segment_t* segment);
 bool       _mi_segment_visit_blocks(mi_segment_t* segment, int heap_tag, bool visit_blocks, mi_block_visit_fun* visitor, void* arg);
 
 // "page.c"
-void*       _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable)  mi_attr_noexcept mi_attr_malloc;
+void*       _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable)  noexcept mi_attr_malloc;
 
-void        _mi_page_retire(mi_page_t* page) mi_attr_noexcept;                  // free the page if there are no other pages with many free blocks
+void        _mi_page_retire(mi_page_t* page) noexcept;                  // free the page if there are no other pages with many free blocks
 void        _mi_page_unfull(mi_page_t* page);
 void        _mi_page_free(mi_page_t* page, mi_page_queue_t* pq, bool force);   // free the page
 void        _mi_page_abandon(mi_page_t* page, mi_page_queue_t* pq);            // abandon the page, to be picked up by another thread...
@@ -282,15 +282,15 @@ mi_msecs_t  _mi_clock_end(mi_msecs_t start);
 mi_msecs_t  _mi_clock_start(void);
 
 // "alloc.c"
-void*       _mi_page_malloc_zero(mi_heap_t* heap, mi_page_t* page, size_t size, bool zero, size_t* usable) mi_attr_noexcept;  // called from `_mi_malloc_generic`
-void*       _mi_page_malloc(mi_heap_t* heap, mi_page_t* page, size_t size) mi_attr_noexcept;                  // called from `_mi_heap_malloc_aligned`
-void*       _mi_page_malloc_zeroed(mi_heap_t* heap, mi_page_t* page, size_t size) mi_attr_noexcept;           // called from `_mi_heap_malloc_aligned`
-void*       _mi_heap_malloc_zero(mi_heap_t* heap, size_t size, bool zero) mi_attr_noexcept;
-void*       _mi_heap_malloc_zero_ex(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable) mi_attr_noexcept;     // called from `_mi_heap_malloc_aligned`
-void*       _mi_heap_realloc_zero(mi_heap_t* heap, void* p, size_t newsize, bool zero, size_t* usable_pre, size_t* usable_post) mi_attr_noexcept;
+void*       _mi_page_malloc_zero(mi_heap_t* heap, mi_page_t* page, size_t size, bool zero, size_t* usable) noexcept;  // called from `_mi_malloc_generic`
+void*       _mi_page_malloc(mi_heap_t* heap, mi_page_t* page, size_t size) noexcept;                  // called from `_mi_heap_malloc_aligned`
+void*       _mi_page_malloc_zeroed(mi_heap_t* heap, mi_page_t* page, size_t size) noexcept;           // called from `_mi_heap_malloc_aligned`
+void*       _mi_heap_malloc_zero(mi_heap_t* heap, size_t size, bool zero) noexcept;
+void*       _mi_heap_malloc_zero_ex(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable) noexcept;     // called from `_mi_heap_malloc_aligned`
+void*       _mi_heap_realloc_zero(mi_heap_t* heap, void* p, size_t newsize, bool zero, size_t* usable_pre, size_t* usable_post) noexcept;
 mi_block_t* _mi_page_ptr_unalign(const mi_page_t* page, const void* p);
 bool        _mi_free_delayed_block(mi_block_t* block);
-void        _mi_free_generic(mi_segment_t* segment, mi_page_t* page, bool is_local, void* p) mi_attr_noexcept;  // for runtime integration
+void        _mi_free_generic(mi_segment_t* segment, mi_page_t* page, bool is_local, void* p) noexcept;  // for runtime integration
 void        _mi_padding_shrink(const mi_page_t* page, const mi_block_t* block, const size_t min_size);
 
 #if MI_DEBUG>1
@@ -331,7 +331,7 @@ bool        _mi_page_is_valid(mi_page_t* page);
 
 #if (MI_DEBUG)
 // use our own assertion to print without memory allocation
-mi_decl_noreturn mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned int line, const char* func) mi_attr_noexcept;
+mi_decl_noreturn mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned int line, const char* func) noexcept;
 #define mi_assert(expr)     ((expr) ? (void)0 : _mi_assert_fail(#expr,__FILE__,__LINE__,__func__))
 #else
 #define mi_assert(x)
@@ -745,7 +745,7 @@ static inline bool mi_heap_malloc_use_guarded(mi_heap_t* heap, size_t size) {
   }
 }
 
-mi_decl_restrict void* _mi_heap_malloc_guarded(mi_heap_t* heap, size_t size, bool zero) mi_attr_noexcept;
+mi_decl_restrict void* _mi_heap_malloc_guarded(mi_heap_t* heap, size_t size, bool zero) noexcept;
 
 #endif
 

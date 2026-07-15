@@ -1501,7 +1501,7 @@ static void mi_segments_try_abandon(mi_heap_t* heap, mi_segments_tld_t* tld) {
   mi_segments_try_abandon_to_target(heap, target, tld);
 }
 
-void mi_collect_reduce(size_t target_size) mi_attr_noexcept {
+void mi_collect_reduce(size_t target_size) noexcept {
   mi_collect(true);
   mi_heap_t* heap = mi_heap_get_default();
   mi_segments_tld_t* tld = &heap->tld->segments;

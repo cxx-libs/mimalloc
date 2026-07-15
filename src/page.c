@@ -491,7 +491,7 @@ void _mi_page_free(mi_page_t* page, mi_page_queue_t* pq, bool force) {
 // Note: called from `mi_free` and benchmarks often
 // trigger this due to freeing everything and then
 // allocating again so careful when changing this.
-void _mi_page_retire(mi_page_t* page) mi_attr_noexcept {
+void _mi_page_retire(mi_page_t* page) noexcept {
   mi_assert_internal(page != NULL);
   mi_assert_expensive(_mi_page_is_valid(page));
   mi_assert_internal(mi_page_all_free(page));
@@ -937,7 +937,7 @@ void _mi_deferred_free(mi_heap_t* heap, bool force) {
   }
 }
 
-void mi_register_deferred_free(mi_deferred_free_fun* fn, void* arg) mi_attr_noexcept {
+void mi_register_deferred_free(mi_deferred_free_fun* fn, void* arg) noexcept {
   mi_atomic_store_ptr_release(void,&deferred_arg, arg);
   mi_atomic_store_ptr_release(void,&deferred_free, (void*)fn);  
 }
@@ -995,7 +995,7 @@ static mi_page_t* mi_large_huge_page_alloc(mi_heap_t* heap, size_t size, size_t 
 
 // Allocate a page
 // Note: in debug mode the size includes MI_PADDING_SIZE and might have overflowed.
-static mi_page_t* mi_find_page(mi_heap_t* heap, size_t size, size_t huge_alignment) mi_attr_noexcept {
+static mi_page_t* mi_find_page(mi_heap_t* heap, size_t size, size_t huge_alignment) noexcept {
   // huge allocation?
   const size_t req_size = size - MI_PADDING_SIZE;  // correct for padding_size in case of an overflow on `size`
   if mi_unlikely(req_size > (MI_MEDIUM_OBJ_SIZE_MAX - MI_PADDING_SIZE) || huge_alignment > 0) {
@@ -1020,7 +1020,7 @@ static mi_page_t* mi_find_page(mi_heap_t* heap, size_t size, size_t huge_alignme
 // Note: in debug mode the size includes MI_PADDING_SIZE and might have overflowed.
 // The `huge_alignment` is normally 0 but is set to a multiple of MI_SLICE_SIZE for
 // very large requested alignments in which case we use a huge singleton page.
-void* _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable) mi_attr_noexcept
+void* _mi_malloc_generic(mi_heap_t* heap, size_t size, bool zero, size_t huge_alignment, size_t* usable) noexcept
 {
   mi_assert_internal(heap != NULL);
 

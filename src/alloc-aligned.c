@@ -25,7 +25,7 @@ static bool mi_malloc_is_naturally_aligned( size_t size, size_t alignment ) {
 }
 
 #if MI_GUARDED
-static mi_decl_noinline mi_decl_restrict void* mi_heap_malloc_guarded_aligned(mi_heap_t* heap, size_t size, size_t alignment, bool zero) mi_attr_noexcept {
+static mi_decl_noinline mi_decl_restrict void* mi_heap_malloc_guarded_aligned(mi_heap_t* heap, size_t size, size_t alignment, bool zero) noexcept {
   // use over allocation for guarded blocksl
   mi_assert_internal(alignment > 0 && alignment < MI_BLOCK_ALIGNMENT_MAX);
   if mi_unlikely(alignment >= MI_BLOCK_ALIGNMENT_MAX || size > (MI_MAX_ALLOC_SIZE - MI_PADDING_SIZE - alignment)) {
@@ -57,7 +57,7 @@ static void* mi_heap_malloc_zero_no_guarded(mi_heap_t* heap, size_t size, bool z
 #endif
 
 // Fallback aligned allocation that over-allocates -- split out for better codegen
-static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_overalloc(mi_heap_t* const heap, const size_t size, const size_t alignment, const size_t offset, const bool zero, size_t* usable) mi_attr_noexcept
+static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_overalloc(mi_heap_t* const heap, const size_t size, const size_t alignment, const size_t offset, const bool zero, size_t* usable) noexcept
 {
   mi_assert_internal(size <= (MI_MAX_ALLOC_SIZE - MI_PADDING_SIZE));
   mi_assert_internal(alignment != 0 && _mi_is_power_of_two(alignment));
@@ -137,7 +137,7 @@ static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_overalloc(mi_heap_t
 }
 
 // Generic primitive aligned allocation -- split out for better codegen
-static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_generic(mi_heap_t* const heap, const size_t size, const size_t alignment, const size_t offset, const bool zero, size_t* usable) mi_attr_noexcept
+static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_generic(mi_heap_t* const heap, const size_t size, const size_t alignment, const size_t offset, const bool zero, size_t* usable) noexcept
 {
   mi_assert_internal(alignment != 0 && _mi_is_power_of_two(alignment));
   // we don't allocate more than MI_MAX_ALLOC_SIZE (see <https://sourceware.org/ml/libc-announce/2019/msg00001.html>)
@@ -171,7 +171,7 @@ static mi_decl_noinline void* mi_heap_malloc_zero_aligned_at_generic(mi_heap_t* 
 // Primitive aligned allocation
 static void* mi_heap_malloc_zero_aligned_at(mi_heap_t* const heap, const size_t size, 
                                             const size_t alignment, const size_t offset, const bool zero,
-                                            size_t* usable) mi_attr_noexcept
+                                            size_t* usable) noexcept
 {
   // note: we don't require `size > offset`, we just guarantee that the address at offset is aligned regardless of the allocated size.
   if mi_unlikely(alignment == 0 || !_mi_is_power_of_two(alignment)) { // require power-of-two (see <https://en.cppreference.com/w/c/memory/aligned_alloc>)
@@ -215,11 +215,11 @@ static void* mi_heap_malloc_zero_aligned_at(mi_heap_t* const heap, const size_t 
 // Optimized mi_heap_malloc_aligned / mi_malloc_aligned
 // ------------------------------------------------------
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_malloc_aligned_at(mi_heap_t* heap, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_malloc_aligned_at(mi_heap_t* heap, size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_malloc_zero_aligned_at(heap, size, alignment, offset, false, NULL);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_malloc_aligned(mi_heap_t* heap, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_malloc_aligned(mi_heap_t* heap, size_t size, size_t alignment) noexcept {
   return mi_heap_malloc_aligned_at(heap, size, alignment, 0);
 }
 
@@ -232,53 +232,53 @@ void* _mi_extern_heap_malloc_aligned = (void*)&mi_heap_malloc_aligned;
 // Aligned Allocation
 // ------------------------------------------------------
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_zalloc_aligned_at(mi_heap_t* heap, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_zalloc_aligned_at(mi_heap_t* heap, size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_malloc_zero_aligned_at(heap, size, alignment, offset, true, NULL);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_zalloc_aligned(mi_heap_t* heap, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_zalloc_aligned(mi_heap_t* heap, size_t size, size_t alignment) noexcept {
   return mi_heap_zalloc_aligned_at(heap, size, alignment, 0);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_calloc_aligned_at(mi_heap_t* heap, size_t count, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_calloc_aligned_at(mi_heap_t* heap, size_t count, size_t size, size_t alignment, size_t offset) noexcept {
   size_t total;
   if (mi_count_size_overflow(count, size, &total)) return NULL;
   return mi_heap_zalloc_aligned_at(heap, total, alignment, offset);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_heap_calloc_aligned(mi_heap_t* heap, size_t count, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_heap_calloc_aligned(mi_heap_t* heap, size_t count, size_t size, size_t alignment) noexcept {
   return mi_heap_calloc_aligned_at(heap,count,size,alignment,0);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_malloc_aligned_at(size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_malloc_aligned_at(size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_malloc_aligned_at(mi_prim_get_default_heap(), size, alignment, offset);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_malloc_aligned(size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_malloc_aligned(size_t size, size_t alignment) noexcept {
   return mi_heap_malloc_aligned(mi_prim_get_default_heap(), size, alignment);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_umalloc_aligned(size_t size, size_t alignment, size_t* block_size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_umalloc_aligned(size_t size, size_t alignment, size_t* block_size) noexcept {
   return mi_heap_malloc_zero_aligned_at(mi_prim_get_default_heap(), size, alignment, 0, false, block_size);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_zalloc_aligned_at(size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_zalloc_aligned_at(size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_zalloc_aligned_at(mi_prim_get_default_heap(), size, alignment, offset);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_zalloc_aligned(size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_zalloc_aligned(size_t size, size_t alignment) noexcept {
   return mi_heap_zalloc_aligned(mi_prim_get_default_heap(), size, alignment);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_uzalloc_aligned(size_t size, size_t alignment, size_t* block_size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_uzalloc_aligned(size_t size, size_t alignment, size_t* block_size) noexcept {
   return mi_heap_malloc_zero_aligned_at(mi_prim_get_default_heap(), size, alignment, 0, true, block_size);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_calloc_aligned_at(size_t count, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_calloc_aligned_at(size_t count, size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_calloc_aligned_at(mi_prim_get_default_heap(), count, size, alignment, offset);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_calloc_aligned(size_t count, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_calloc_aligned(size_t count, size_t size, size_t alignment) noexcept {
   return mi_heap_calloc_aligned(mi_prim_get_default_heap(), count, size, alignment);
 }
 
@@ -287,7 +287,7 @@ void* _mi_extern_heap_malloc_aligned = (void*)&mi_heap_malloc_aligned;
 // Aligned re-allocation
 // ------------------------------------------------------
 
-static void* mi_heap_realloc_zero_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset, bool zero) mi_attr_noexcept {
+static void* mi_heap_realloc_zero_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset, bool zero) noexcept {
   mi_assert(alignment > 0);
   if (alignment <= sizeof(uintptr_t) && offset==0) return _mi_heap_realloc_zero(heap,p,newsize,zero,NULL,NULL);
   if (p == NULL) return mi_heap_malloc_zero_aligned_at(heap,newsize,alignment,offset,zero,NULL);
@@ -312,61 +312,61 @@ static void* mi_heap_realloc_zero_aligned_at(mi_heap_t* heap, void* p, size_t ne
   }
 }
 
-static void* mi_heap_realloc_zero_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, bool zero) mi_attr_noexcept {
+static void* mi_heap_realloc_zero_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, bool zero) noexcept {
   mi_assert(alignment > 0);
   if (alignment <= sizeof(uintptr_t)) return _mi_heap_realloc_zero(heap,p,newsize,zero,NULL,NULL);
   return mi_heap_realloc_zero_aligned_at(heap,p,newsize,alignment,0,zero);
 }
 
-[[nodiscard]] void* mi_heap_realloc_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_realloc_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset) noexcept {
   return mi_heap_realloc_zero_aligned_at(heap,p,newsize,alignment,offset,false);
 }
 
-[[nodiscard]] void* mi_heap_realloc_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_realloc_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment) noexcept {
   return mi_heap_realloc_zero_aligned(heap,p,newsize,alignment,false);
 }
 
-[[nodiscard]] void* mi_heap_rezalloc_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_rezalloc_aligned_at(mi_heap_t* heap, void* p, size_t newsize, size_t alignment, size_t offset) noexcept {
   return mi_heap_realloc_zero_aligned_at(heap, p, newsize, alignment, offset, true);
 }
 
-[[nodiscard]] void* mi_heap_rezalloc_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_rezalloc_aligned(mi_heap_t* heap, void* p, size_t newsize, size_t alignment) noexcept {
   return mi_heap_realloc_zero_aligned(heap, p, newsize, alignment, true);
 }
 
-[[nodiscard]] void* mi_heap_recalloc_aligned_at(mi_heap_t* heap, void* p, size_t newcount, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_recalloc_aligned_at(mi_heap_t* heap, void* p, size_t newcount, size_t size, size_t alignment, size_t offset) noexcept {
   size_t total;
   if (mi_count_size_overflow(newcount, size, &total)) return NULL;
   return mi_heap_rezalloc_aligned_at(heap, p, total, alignment, offset);
 }
 
-[[nodiscard]] void* mi_heap_recalloc_aligned(mi_heap_t* heap, void* p, size_t newcount, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_heap_recalloc_aligned(mi_heap_t* heap, void* p, size_t newcount, size_t size, size_t alignment) noexcept {
   size_t total;
   if (mi_count_size_overflow(newcount, size, &total)) return NULL;
   return mi_heap_rezalloc_aligned(heap, p, total, alignment);
 }
 
-[[nodiscard]] void* mi_realloc_aligned_at(void* p, size_t newsize, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_realloc_aligned_at(void* p, size_t newsize, size_t alignment, size_t offset) noexcept {
   return mi_heap_realloc_aligned_at(mi_prim_get_default_heap(), p, newsize, alignment, offset);
 }
 
-[[nodiscard]] void* mi_realloc_aligned(void* p, size_t newsize, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_realloc_aligned(void* p, size_t newsize, size_t alignment) noexcept {
   return mi_heap_realloc_aligned(mi_prim_get_default_heap(), p, newsize, alignment);
 }
 
-[[nodiscard]] void* mi_rezalloc_aligned_at(void* p, size_t newsize, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_rezalloc_aligned_at(void* p, size_t newsize, size_t alignment, size_t offset) noexcept {
   return mi_heap_rezalloc_aligned_at(mi_prim_get_default_heap(), p, newsize, alignment, offset);
 }
 
-[[nodiscard]] void* mi_rezalloc_aligned(void* p, size_t newsize, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_rezalloc_aligned(void* p, size_t newsize, size_t alignment) noexcept {
   return mi_heap_rezalloc_aligned(mi_prim_get_default_heap(), p, newsize, alignment);
 }
 
-[[nodiscard]] void* mi_recalloc_aligned_at(void* p, size_t newcount, size_t size, size_t alignment, size_t offset) mi_attr_noexcept {
+[[nodiscard]] void* mi_recalloc_aligned_at(void* p, size_t newcount, size_t size, size_t alignment, size_t offset) noexcept {
   return mi_heap_recalloc_aligned_at(mi_prim_get_default_heap(), p, newcount, size, alignment, offset);
 }
 
-[[nodiscard]] void* mi_recalloc_aligned(void* p, size_t newcount, size_t size, size_t alignment) mi_attr_noexcept {
+[[nodiscard]] void* mi_recalloc_aligned(void* p, size_t newcount, size_t size, size_t alignment) noexcept {
   return mi_heap_recalloc_aligned(mi_prim_get_default_heap(), p, newcount, size, alignment);
 }
 

@@ -303,7 +303,7 @@ static void mi_cdecl mi_buffered_out(const char* msg, void* arg) {
 // Print statistics
 //------------------------------------------------------------
 
-static void _mi_stats_print(mi_stats_t* stats, mi_output_fun* out0, void* arg0) mi_attr_noexcept {
+static void _mi_stats_print(mi_stats_t* stats, mi_output_fun* out0, void* arg0) noexcept {
   // wrap the output function to be line buffered
   char buf[256];
   buffered_t buffer = { out0, arg0, NULL, 0, 255 };
@@ -387,14 +387,14 @@ static void mi_stats_merge_from(mi_stats_t* stats) {
   }
 }
 
-void mi_stats_reset(void) mi_attr_noexcept {
+void mi_stats_reset(void) noexcept {
   mi_stats_t* stats = mi_stats_get_default();
   if (stats != &_mi_stats_main) { memset(stats, 0, sizeof(mi_stats_t)); }
   memset(&_mi_stats_main, 0, sizeof(mi_stats_t));
   if (mi_process_start == 0) { mi_process_start = _mi_clock_start(); };
 }
 
-void mi_stats_merge(void) mi_attr_noexcept {
+void mi_stats_merge(void) noexcept {
   mi_stats_merge_from( mi_stats_get_default() );
 }
 
@@ -406,17 +406,17 @@ void _mi_stats_done(mi_stats_t* stats) {  // called from `mi_thread_done`
   mi_stats_merge_from(stats);
 }
 
-void mi_stats_print_out(mi_output_fun* out, void* arg) mi_attr_noexcept {
+void mi_stats_print_out(mi_output_fun* out, void* arg) noexcept {
   mi_stats_merge_from(mi_stats_get_default());
   _mi_stats_print(&_mi_stats_main, out, arg);
 }
 
-void mi_stats_print(void* out) mi_attr_noexcept {
+void mi_stats_print(void* out) noexcept {
   // for compatibility there is an `out` parameter (which can be `stdout` or `stderr`)
   mi_stats_print_out((mi_output_fun*)out, NULL);
 }
 
-void mi_thread_stats_print_out(mi_output_fun* out, void* arg) mi_attr_noexcept {
+void mi_thread_stats_print_out(mi_output_fun* out, void* arg) noexcept {
   _mi_stats_print(mi_stats_get_default(), out, arg);
 }
 
@@ -449,7 +449,7 @@ mi_msecs_t _mi_clock_end(mi_msecs_t start) {
 // Basic process statistics
 // --------------------------------------------------------
 
-mi_decl_export void mi_process_info(size_t* elapsed_msecs, size_t* user_msecs, size_t* system_msecs, size_t* current_rss, size_t* peak_rss, size_t* current_commit, size_t* peak_commit, size_t* page_faults) mi_attr_noexcept
+mi_decl_export void mi_process_info(size_t* elapsed_msecs, size_t* user_msecs, size_t* system_msecs, size_t* current_rss, size_t* peak_rss, size_t* current_commit, size_t* peak_commit, size_t* page_faults) noexcept
 {
   mi_process_info_t pinfo;
   _mi_memzero_var(pinfo);
@@ -479,7 +479,7 @@ mi_decl_export void mi_process_info(size_t* elapsed_msecs, size_t* user_msecs, s
 // Return statistics
 // --------------------------------------------------------
 
-bool mi_stats_get(mi_stats_t* stats) mi_attr_noexcept {
+bool mi_stats_get(mi_stats_t* stats) noexcept {
   if (stats == NULL || stats->size != sizeof(mi_stats_t) || stats->version != MI_STAT_VERSION) return false;
   _mi_memzero(stats,stats->size);
   _mi_memcpy(stats, &_mi_stats_main, sizeof(mi_stats_t));
@@ -579,7 +579,7 @@ static void mi_heap_buf_print_counter_value(mi_heap_buf_t* hbuf, const char* nam
 #define MI_STAT_COUNT(stat)    mi_heap_buf_print_count_value(&hbuf, #stat, &stats->stat);
 #define MI_STAT_COUNTER(stat)  mi_heap_buf_print_counter_value(&hbuf, #stat, &stats->stat);
 
-char* mi_stats_get_json(size_t output_size, char* output_buf) mi_attr_noexcept {
+char* mi_stats_get_json(size_t output_size, char* output_buf) noexcept {
   mi_heap_buf_t hbuf = { NULL, 0, 0, true };
   if (output_size > 0 && output_buf != NULL) {
     _mi_memzero(output_buf, output_size);

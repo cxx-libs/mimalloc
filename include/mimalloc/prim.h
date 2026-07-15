@@ -150,7 +150,7 @@ void _mi_prim_thread_associate_default_heap(mi_heap_t* heap);
 
 #define MI_HAS_TLS_SLOT    1
 
-static inline void* mi_prim_tls_slot(size_t slot) mi_attr_noexcept {
+static inline void* mi_prim_tls_slot(size_t slot) noexcept {
   void* res;
   const size_t ofs = (slot*sizeof(void*));
   #if defined(__i386__)
@@ -185,7 +185,7 @@ static inline void* mi_prim_tls_slot(size_t slot) mi_attr_noexcept {
 }
 
 // setting a tls slot is only used on macOS for now
-static inline void mi_prim_tls_slot_set(size_t slot, void* value) mi_attr_noexcept {
+static inline void mi_prim_tls_slot_set(size_t slot, void* value) noexcept {
   const size_t ofs = (slot*sizeof(void*));
   #if defined(__i386__)
     __asm__("movl %1,%%gs:%0" : "=m" (*((void**)ofs)) : "rn" (value) : );  // 32-bit always uses GS
@@ -235,7 +235,7 @@ extern mi_decl_hidden size_t _mi_win_tls_offset;
 #define MI_TLS_SLOT     (0x1480 + _mi_win_tls_offset)  // User TLS slots <https://en.wikipedia.org/wiki/Win32_Thread_Information_Block>
 #endif
 
-static inline void* mi_prim_tls_slot(size_t slot) mi_attr_noexcept {
+static inline void* mi_prim_tls_slot(size_t slot) noexcept {
   #if (_M_X64 || _M_AMD64) && !defined(_M_ARM64EC)
   return (void*)__readgsqword((unsigned long)slot);   // direct load at offset from gs
   #elif _M_IX86 && !defined(_M_ARM64EC)
@@ -244,7 +244,7 @@ static inline void* mi_prim_tls_slot(size_t slot) mi_attr_noexcept {
   return ((void**)NtCurrentTeb())[slot / sizeof(void*)];
   #endif
 }
-static inline void mi_prim_tls_slot_set(size_t slot, void* value) mi_attr_noexcept {
+static inline void mi_prim_tls_slot_set(size_t slot, void* value) noexcept {
   ((void**)NtCurrentTeb())[slot / sizeof(void*)] = value;
 }
 
@@ -287,12 +287,12 @@ static inline void mi_prim_tls_slot_set(size_t slot, void* value) mi_attr_noexce
 extern mi_decl_hidden mi_decl_thread mi_heap_t* _mi_heap_default;  // default heap to allocate from
 extern mi_decl_hidden bool _mi_process_is_initialized;             // has mi_process_init been called?
 
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept;
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept;
 
 // Get a unique id for the current thread.
 #if defined(MI_PRIM_THREAD_ID)
 
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
   const mi_threadid_t tid = MI_PRIM_THREAD_ID();  // used for example by CPython for a free threaded build (see python/cpython#115488)
   mi_assert_internal( (tid & 0x03) == 0 );        // mimalloc reserves the bottom 2 bits
   return tid;
@@ -300,21 +300,21 @@ static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
 
 #elif defined(_WIN32)
 
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
   // Windows: works on Intel and ARM in both 32- and 64-bit
   return (uintptr_t)NtCurrentTeb();
 }
 
 #elif MI_USE_BUILTIN_THREAD_POINTER
 
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
   // Works on most Unix based platforms with recent compilers
   return (uintptr_t)__builtin_thread_pointer();
 }
 
 #elif MI_HAS_TLS_SLOT
 
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
   #if defined(__BIONIC__)
     // issue #384, #495: on the Bionic libc (Android), slot 1 is the thread id
     // see: https://github.com/aosp-mirror/platform_bionic/blob/c44b1d0676ded732df4b3b21c5f798eacae93228/libc/platform/bionic/tls_defines.h#L86
@@ -330,7 +330,7 @@ static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
 #else
 
 // otherwise use portable C, taking the address of a thread local variable (this is still very fast on most platforms).
-static inline mi_threadid_t _mi_prim_thread_id(void) mi_attr_noexcept {
+static inline mi_threadid_t _mi_prim_thread_id(void) noexcept {
   return (uintptr_t)&_mi_heap_default;
 }
 

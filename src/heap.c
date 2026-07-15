@@ -188,11 +188,11 @@ void _mi_heap_collect_abandon(mi_heap_t* heap) {
   mi_heap_collect_ex(heap, MI_ABANDON);
 }
 
-void mi_heap_collect(mi_heap_t* heap, bool force) mi_attr_noexcept {
+void mi_heap_collect(mi_heap_t* heap, bool force) noexcept {
   mi_heap_collect_ex(heap, (force ? MI_FORCE : MI_NORMAL));
 }
 
-void mi_collect(bool force) mi_attr_noexcept {
+void mi_collect(bool force) noexcept {
   mi_heap_collect(mi_prim_get_default_heap(), force);
 }
 
@@ -759,7 +759,7 @@ static const mi_page_t* mi_safe_ptr_page(void* p) {
 // unsafe heap utilization function for DragonFly (see issue #1258)
 // If the page of pointer `p` belongs to `heap` (or `heap==NULL`) and has less than `perc_threshold` used blocks in its used area return `true`.
 // This function is unsafe in general as it assumes we are the only thread accessing the page of `p`.
-bool mi_unsafe_heap_page_is_under_utilized(mi_heap_t* heap, void* p, size_t perc_threshold) mi_attr_noexcept {
+bool mi_unsafe_heap_page_is_under_utilized(mi_heap_t* heap, void* p, size_t perc_threshold) noexcept {
   if (p==NULL) return false;
   const mi_page_t* const page = mi_safe_ptr_page(p);   // Get the page containing this pointer
   if (page==NULL || page->used==page->capacity || page->capacity < page->reserved) return false;

@@ -32,27 +32,27 @@ terms of the MIT license. A copy of the license can be found in the file
 #endif
 
 
-[[nodiscard]] size_t mi_malloc_size(const void* p) mi_attr_noexcept {
+[[nodiscard]] size_t mi_malloc_size(const void* p) noexcept {
   // if (!mi_is_in_heap_region(p)) return 0;
   return mi_usable_size(p);
 }
 
-[[nodiscard]] size_t mi_malloc_usable_size(const void *p) mi_attr_noexcept {
+[[nodiscard]] size_t mi_malloc_usable_size(const void *p) noexcept {
   // if (!mi_is_in_heap_region(p)) return 0;
   return mi_usable_size(p);
 }
 
-[[nodiscard]] size_t mi_malloc_good_size(size_t size) mi_attr_noexcept {
+[[nodiscard]] size_t mi_malloc_good_size(size_t size) noexcept {
   return mi_good_size(size);
 }
 
-void mi_cfree(void* p) mi_attr_noexcept {
+void mi_cfree(void* p) noexcept {
   if (mi_is_in_heap_region(p)) {
     mi_free(p);
   }
 }
 
-int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // mi_attr_noexcept (issue #794)
+int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // noexcept (issue #794)
   // Note: The spec dictates we should not modify `*p` on an error. (issue#27)
   // <http://man7.org/linux/man-pages/man3/posix_memalign.3.html>
   if (p == NULL) return EINVAL;
@@ -66,24 +66,24 @@ int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // mi_attr_noe
   return 0;
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_memalign(size_t alignment, size_t size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_memalign(size_t alignment, size_t size) noexcept {
   void* p = mi_malloc_aligned(size, alignment);
   mi_assert_internal(_mi_is_aligned(p,alignment));
   return p;
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_valloc(size_t size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_valloc(size_t size) noexcept {
   return mi_memalign( _mi_os_page_size(), size );
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_pvalloc(size_t size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_pvalloc(size_t size) noexcept {
   size_t psize = _mi_os_page_size();
   if (size >= SIZE_MAX - psize) return NULL; // overflow
   size_t asize = _mi_align_up(size, psize);
   return mi_malloc_aligned(asize, psize);
 }
 
-[[nodiscard]] mi_decl_restrict void* mi_aligned_alloc(size_t alignment, size_t size) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict void* mi_aligned_alloc(size_t alignment, size_t size) noexcept {
   // C11 requires the size to be an integral multiple of the alignment, see <https://en.cppreference.com/w/c/memory/aligned_alloc>.
   // unfortunately, it turns out quite some programs pass a size that is not an integral multiple so skip this check..
   /* if mi_unlikely((size & (alignment - 1)) != 0) { // C11 requires alignment>0 && integral multiple, see <https://en.cppreference.com/w/c/memory/aligned_alloc>
@@ -99,7 +99,7 @@ int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // mi_attr_noe
   return p;
 }
 
-[[nodiscard]] void* mi_reallocarray( void* p, size_t count, size_t size ) mi_attr_noexcept {  // BSD <https://man.freebsd.org/cgi/man.cgi?query=reallocarray>
+[[nodiscard]] void* mi_reallocarray( void* p, size_t count, size_t size ) noexcept {  // BSD <https://man.freebsd.org/cgi/man.cgi?query=reallocarray>
   size_t total;
   if mi_unlikely(mi_count_size_overflow(count, size, &total)) {
     errno = EOVERFLOW;
@@ -110,7 +110,7 @@ int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // mi_attr_noe
   return newp;
 }
 
-[[nodiscard]] int mi_reallocarr( void* ptrp, size_t count, size_t size ) mi_attr_noexcept { // NetBSD <https://man.netbsd.org/reallocarr.3>
+[[nodiscard]] int mi_reallocarr( void* ptrp, size_t count, size_t size ) noexcept { // NetBSD <https://man.netbsd.org/reallocarr.3>
   mi_assert(size != 0);
   mi_assert(ptrp != NULL);
   if (ptrp == NULL || size == 0) {
@@ -134,13 +134,13 @@ int mi_posix_memalign(void** p, size_t alignment, size_t size) {  // mi_attr_noe
   }
 }
 
-void* mi__expand(void* p, size_t newsize) mi_attr_noexcept {  // Microsoft
+void* mi__expand(void* p, size_t newsize) noexcept {  // Microsoft
   void* res = mi_expand(p, newsize);
   if (res == NULL) { errno = ENOMEM; }
   return res;
 }
 
-[[nodiscard]] mi_decl_restrict wchar_t* mi_wcsdup(const wchar_t* s) mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict wchar_t* mi_wcsdup(const wchar_t* s) noexcept {
   if (s==NULL) return NULL;
   size_t wlen;
   for(wlen = 0; s[wlen] != 0 && wlen < PTRDIFF_MAX; wlen++) { }  // prevent overflow on wlen+1
@@ -153,11 +153,11 @@ void* mi__expand(void* p, size_t newsize) mi_attr_noexcept {  // Microsoft
   return p;
 }
 
-[[nodiscard]] mi_decl_restrict unsigned char* mi_mbsdup(const unsigned char* s)  mi_attr_noexcept {
+[[nodiscard]] mi_decl_restrict unsigned char* mi_mbsdup(const unsigned char* s)  noexcept {
   return (unsigned char*)mi_strdup((const char*)s);
 }
 
-int mi_dupenv_s(char** buf, size_t* size, const char* name) mi_attr_noexcept {
+int mi_dupenv_s(char** buf, size_t* size, const char* name) noexcept {
   if (size != NULL) *size = 0;
   if (buf==NULL || name==NULL) return EINVAL;
   char* p = getenv(name);
@@ -172,7 +172,7 @@ int mi_dupenv_s(char** buf, size_t* size, const char* name) mi_attr_noexcept {
   return 0;
 }
 
-int mi_wdupenv_s(wchar_t** buf, size_t* size, const wchar_t* name) mi_attr_noexcept {
+int mi_wdupenv_s(wchar_t** buf, size_t* size, const wchar_t* name) noexcept {
   if (size != NULL) *size = 0;
   if (buf==NULL || name==NULL) return EINVAL;  
 #if !defined(_WIN32) || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP))
@@ -193,10 +193,10 @@ int mi_wdupenv_s(wchar_t** buf, size_t* size, const wchar_t* name) mi_attr_noexc
 #endif
 }
 
-[[nodiscard]] void* mi_aligned_offset_recalloc(void* p, size_t newcount, size_t size, size_t alignment, size_t offset) mi_attr_noexcept { // Microsoft
+[[nodiscard]] void* mi_aligned_offset_recalloc(void* p, size_t newcount, size_t size, size_t alignment, size_t offset) noexcept { // Microsoft
   return mi_recalloc_aligned_at(p, newcount, size, alignment, offset);
 }
 
-[[nodiscard]] void* mi_aligned_recalloc(void* p, size_t newcount, size_t size, size_t alignment) mi_attr_noexcept { // Microsoft
+[[nodiscard]] void* mi_aligned_recalloc(void* p, size_t newcount, size_t size, size_t alignment) noexcept { // Microsoft
   return mi_recalloc_aligned(p, newcount, size, alignment);
 }

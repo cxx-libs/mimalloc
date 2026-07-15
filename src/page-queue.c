@@ -106,7 +106,7 @@ size_t _mi_bin_size(size_t bin) {
 }
 
 // Good size for allocation
-size_t mi_good_size(size_t size) mi_attr_noexcept {
+size_t mi_good_size(size_t size) noexcept {
   if (size <= MI_MEDIUM_OBJ_SIZE_MAX - MI_PADDING_SIZE) {
     return _mi_bin_size(mi_bin(size + MI_PADDING_SIZE));
   }

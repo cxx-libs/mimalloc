@@ -825,7 +825,7 @@ static bool mi_arena_add(mi_arena_t* arena, mi_arena_id_t* arena_id, mi_stats_t*
   return false;
 }
 
-static bool mi_manage_os_memory_ex2(void* start, size_t size, bool is_large, int numa_node, bool exclusive, mi_memid_t memid, mi_arena_id_t* arena_id) mi_attr_noexcept
+static bool mi_manage_os_memory_ex2(void* start, size_t size, bool is_large, int numa_node, bool exclusive, mi_memid_t memid, mi_arena_id_t* arena_id) noexcept
 {
   if (arena_id != NULL) *arena_id = _mi_arena_id_none();
   if (size < MI_ARENA_BLOCK_SIZE) {
@@ -891,7 +891,7 @@ static bool mi_manage_os_memory_ex2(void* start, size_t size, bool is_large, int
 
 }
 
-bool mi_manage_os_memory_ex(void* start, size_t size, bool is_committed, bool is_large, bool is_zero, int numa_node, bool exclusive, mi_arena_id_t* arena_id) mi_attr_noexcept {
+bool mi_manage_os_memory_ex(void* start, size_t size, bool is_committed, bool is_large, bool is_zero, int numa_node, bool exclusive, mi_arena_id_t* arena_id) noexcept {
   mi_memid_t memid = _mi_memid_create(MI_MEM_EXTERNAL);
   memid.initially_committed = is_committed;
   memid.initially_zero = is_zero;
@@ -900,7 +900,7 @@ bool mi_manage_os_memory_ex(void* start, size_t size, bool is_committed, bool is
 }
 
 // Reserve a range of regular OS memory
-int mi_reserve_os_memory_ex(size_t size, bool commit, bool allow_large, bool exclusive, mi_arena_id_t* arena_id) mi_attr_noexcept {
+int mi_reserve_os_memory_ex(size_t size, bool commit, bool allow_large, bool exclusive, mi_arena_id_t* arena_id) noexcept {
   if (arena_id != NULL) *arena_id = _mi_arena_id_none();
   size = _mi_align_up(size, MI_ARENA_BLOCK_SIZE); // at least one block
   mi_memid_t memid;
@@ -918,12 +918,12 @@ int mi_reserve_os_memory_ex(size_t size, bool commit, bool allow_large, bool exc
 
 
 // Manage a range of regular OS memory
-bool mi_manage_os_memory(void* start, size_t size, bool is_committed, bool is_large, bool is_zero, int numa_node) mi_attr_noexcept {
+bool mi_manage_os_memory(void* start, size_t size, bool is_committed, bool is_large, bool is_zero, int numa_node) noexcept {
   return mi_manage_os_memory_ex(start, size, is_committed, is_large, is_zero, numa_node, false /* exclusive? */, NULL);
 }
 
 // Reserve a range of regular OS memory
-int mi_reserve_os_memory(size_t size, bool commit, bool allow_large) mi_attr_noexcept {
+int mi_reserve_os_memory(size_t size, bool commit, bool allow_large) noexcept {
   return mi_reserve_os_memory_ex(size, commit, allow_large, false, NULL);
 }
 
@@ -956,7 +956,7 @@ static size_t mi_debug_show_bitmap(const char* prefix, const char* header, size_
   return inuse_count;
 }
 
-void mi_debug_show_arenas(void) mi_attr_noexcept {
+void mi_debug_show_arenas(void) noexcept {
   const bool show_inuse = true;
   size_t max_arenas = mi_atomic_load_relaxed(&mi_arena_count);
   size_t inuse_total = 0;
@@ -985,7 +985,7 @@ void mi_debug_show_arenas(void) mi_attr_noexcept {
 }
 
 
-void mi_arenas_print(void) mi_attr_noexcept {
+void mi_arenas_print(void) noexcept {
   mi_debug_show_arenas();
 }
 
@@ -994,7 +994,7 @@ void mi_arenas_print(void) mi_attr_noexcept {
   Reserve a huge page arena.
 ----------------------------------------------------------- */
 // reserve at a specific numa node
-int mi_reserve_huge_os_pages_at_ex(size_t pages, int numa_node, size_t timeout_msecs, bool exclusive, mi_arena_id_t* arena_id) mi_attr_noexcept {
+int mi_reserve_huge_os_pages_at_ex(size_t pages, int numa_node, size_t timeout_msecs, bool exclusive, mi_arena_id_t* arena_id) noexcept {
   if (arena_id != NULL) *arena_id = -1;
   if (pages==0) return 0;
   if (numa_node < -1) numa_node = -1;
@@ -1016,12 +1016,12 @@ int mi_reserve_huge_os_pages_at_ex(size_t pages, int numa_node, size_t timeout_m
   return 0;
 }
 
-int mi_reserve_huge_os_pages_at(size_t pages, int numa_node, size_t timeout_msecs) mi_attr_noexcept {
+int mi_reserve_huge_os_pages_at(size_t pages, int numa_node, size_t timeout_msecs) noexcept {
   return mi_reserve_huge_os_pages_at_ex(pages, numa_node, timeout_msecs, false, NULL);
 }
 
 // reserve huge pages evenly among the given number of numa nodes (or use the available ones as detected)
-int mi_reserve_huge_os_pages_interleave(size_t pages, size_t numa_nodes, size_t timeout_msecs) mi_attr_noexcept {
+int mi_reserve_huge_os_pages_interleave(size_t pages, size_t numa_nodes, size_t timeout_msecs) noexcept {
   if (pages == 0) return 0;
 
   // pages per numa node
@@ -1048,7 +1048,7 @@ int mi_reserve_huge_os_pages_interleave(size_t pages, size_t numa_nodes, size_t 
   return 0;
 }
 
-int mi_reserve_huge_os_pages(size_t pages, double max_secs, size_t* pages_reserved) mi_attr_noexcept {
+int mi_reserve_huge_os_pages(size_t pages, double max_secs, size_t* pages_reserved) noexcept {
   MI_UNUSED(max_secs);
   _mi_warning_message("mi_reserve_huge_os_pages is deprecated: use mi_reserve_huge_os_pages_interleave/at instead\n");
   if (pages_reserved != NULL) *pages_reserved = 0;

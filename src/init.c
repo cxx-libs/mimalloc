@@ -143,7 +143,7 @@ mi_decl_cache_align static const mi_tld_t tld_empty = {
   { sizeof(mi_stats_t), MI_STAT_VERSION, MI_STATS_NULL }       // stats
 };
 
-mi_threadid_t _mi_thread_id(void) mi_attr_noexcept {
+mi_threadid_t _mi_thread_id(void) noexcept {
   mi_threadid_t tid = _mi_prim_thread_id();
   mi_assert_internal( (tid & 0x03) == 0 ); // mimalloc reserves the bottom 2 bits
   return tid;
@@ -502,7 +502,7 @@ size_t  _mi_current_thread_count(void) {
 }
 
 // This is called from the `mi_malloc_generic`
-void mi_thread_init(void) mi_attr_noexcept
+void mi_thread_init(void) noexcept
 {
   // ensure our process has started already
   mi_process_init();
@@ -517,7 +517,7 @@ void mi_thread_init(void) mi_attr_noexcept
   //_mi_verbose_message("thread init: 0x%zx\n", _mi_thread_id());
 }
 
-void mi_thread_done(void) mi_attr_noexcept {
+void mi_thread_done(void) noexcept {
   _mi_thread_done(NULL);
 }
 
@@ -562,7 +562,7 @@ void _mi_heap_set_default_direct(mi_heap_t* heap)  {
   _mi_prim_thread_associate_default_heap(heap);
 }
 
-void mi_thread_set_in_threadpool(void) mi_attr_noexcept {
+void mi_thread_set_in_threadpool(void) noexcept {
   // nothing
 }
 
@@ -577,7 +577,7 @@ bool mi_decl_noinline _mi_preloading(void) {
 }
 
 // Returns true if mimalloc was redirected
-[[nodiscard]] bool mi_is_redirected(void) mi_attr_noexcept {
+[[nodiscard]] bool mi_is_redirected(void) noexcept {
   return _mi_is_redirected();
 }
 
@@ -626,7 +626,7 @@ static void mi_detect_cpu_features(void) {
 #endif
 
 // Initialize the process; called by thread_init or the process loader
-static void mi_process_init_once(void) mi_attr_noexcept {
+static void mi_process_init_once(void) noexcept {
   _mi_process_is_initialized = true;  
   _mi_verbose_message("process init: 0x%zx\n", _mi_thread_id());
   mi_process_setup_auto_thread_done();
@@ -664,7 +664,7 @@ static void mi_process_init_once(void) mi_attr_noexcept {
 }
 
 // Initialize the process; called by thread_init or the process loader
-void mi_process_init(void) mi_attr_noexcept {
+void mi_process_init(void) noexcept {
   #if _MSC_VER < 1920
 	mi_heap_main_init(); // vs2017 can dynamically re-initialize _mi_heap_main
 	#endif
@@ -723,13 +723,13 @@ static void mi_process_done_once(void) {
 
 
 // Called when the process is done (cdecl as it is used with `at_exit` on some platforms)
-void mi_cdecl mi_process_done(void) mi_attr_noexcept {
+void mi_cdecl mi_process_done(void) noexcept {
   mi_atomic_do_once {
     mi_process_done_once();
   }
 }
 
-void mi_cdecl _mi_auto_process_done(void) mi_attr_noexcept {
+void mi_cdecl _mi_auto_process_done(void) noexcept {
   if (_mi_option_get_fast(mi_option_destroy_on_exit)>1) return;
   mi_process_done();
 }

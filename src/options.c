@@ -19,7 +19,7 @@ static long mi_max_warning_count = 16; // stop outputting warnings after this (u
 
 static void mi_add_stderr_output(void);
 
-int mi_version(void) mi_attr_noexcept {
+int mi_version(void) noexcept {
   return MI_MALLOC_VERSION;
 }
 
@@ -201,7 +201,7 @@ void _mi_options_init(void) {
 #define mi_stringifyx(str)  #str                // and stringify
 #define mi_stringify(str)   mi_stringifyx(str)  // expand
 
-void mi_options_print(void) mi_attr_noexcept
+void mi_options_print(void) noexcept
 {
   // show version
   const int vermajor = MI_MALLOC_VERSION/10000;
@@ -399,7 +399,7 @@ static mi_output_fun* mi_out_get_default(void** parg) {
   return (out == NULL ? &mi_out_buf : out);
 }
 
-void mi_register_output(mi_output_fun* out, void* arg) mi_attr_noexcept {
+void mi_register_output(mi_output_fun* out, void* arg) noexcept {
   mi_atomic_store_ptr_release(void,&mi_out_default, (void*)(out == NULL ? &mi_out_stderr : out)); // stop using the delayed output buffer
   mi_atomic_store_ptr_release(void,&mi_out_arg, arg);
   if (out!=NULL) { mi_out_buf_flush(out,true,arg); }        // output all the delayed output now
@@ -541,7 +541,7 @@ void _mi_warning_message(const char* fmt, ...) {
 
 
 #if MI_DEBUG
-mi_decl_noreturn mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned line, const char* func ) mi_attr_noexcept {
+mi_decl_noreturn mi_decl_cold void _mi_assert_fail(const char* assertion, const char* fname, unsigned line, const char* func ) noexcept {
   _mi_fprintf(NULL, NULL, "mimalloc: assertion failed: at \"%s\":%u, %s\n  assertion: \"%s\"\n", fname, line, (func==NULL?"":func), assertion);
   abort();
 }
