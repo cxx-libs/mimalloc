@@ -150,7 +150,7 @@ mi_threadid_t _mi_thread_id(void) noexcept {
 }
 
 // the thread-local default heap for allocation
-mi_decl_thread mi_heap_t* _mi_heap_default = (mi_heap_t*)&_mi_heap_empty;
+thread_local mi_heap_t* _mi_heap_default = (mi_heap_t*)&_mi_heap_empty;
 
 extern mi_decl_hidden mi_heap_t _mi_heap_main;
 

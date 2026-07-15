@@ -428,7 +428,7 @@ static _Atomic(size_t) warning_count; // = 0;  // when >= max_warning_count stop
 // variables on demand. This is why we use a _mi_preloading test on such
 // platforms. However, C code generator may move the initial thread local address
 // load before the `if` and we therefore split it out in a separate function.
-static mi_decl_thread bool recurse = false;
+static thread_local bool recurse = false;
 
 static mi_decl_noinline bool mi_recurse_enter_prim(void) {
   if (recurse) return false;

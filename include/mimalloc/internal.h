@@ -33,7 +33,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #pragma warning(disable:4127)   // suppress constant conditional warning (due to MI_SECURE paths)
 #pragma warning(disable:26812)  // unscoped enum warning
 #define mi_decl_noinline        __declspec(noinline)
-#define mi_decl_thread          __declspec(thread)
 #define mi_decl_align(a)        __declspec(align(a))
 #define mi_decl_noreturn        __declspec(noreturn)
 #define mi_decl_weak
@@ -41,7 +40,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #define mi_decl_cold
 #elif (defined(__GNUC__) && (__GNUC__ >= 3)) || defined(__clang__) // includes clang and icc
 #define mi_decl_noinline        __attribute__((noinline))
-#define mi_decl_thread          __thread
 #define mi_decl_align(a)        __attribute__((aligned(a)))
 #define mi_decl_noreturn        __attribute__((noreturn))
 #define mi_decl_weak            __attribute__((weak))
@@ -53,7 +51,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #endif
 #elif __cplusplus >= 201103L    // c++11
 #define mi_decl_noinline
-#define mi_decl_thread          thread_local
 #define mi_decl_align(a)        alignas(a)
 #define mi_decl_noreturn        [[noreturn]]
 #define mi_decl_weak
@@ -61,7 +58,6 @@ terms of the MIT license. A copy of the license can be found in the file
 #define mi_decl_cold
 #else
 #define mi_decl_noinline
-#define mi_decl_thread          __thread        // hope for the best :-)
 #define mi_decl_align(a)
 #define mi_decl_noreturn
 #define mi_decl_weak
